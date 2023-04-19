@@ -7,7 +7,6 @@ class SimpleChat:
 
     def __init__(self, prompt):
         self.llm = OpenAI(
-            # openai_api_key = "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",
             openai_api_key = ModelConfig.GPT.API_KEY,
                           temperature=0.7)
         self.prompt = prompt

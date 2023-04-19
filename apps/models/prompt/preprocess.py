@@ -14,7 +14,6 @@ class Prompt:
 
     def load_template(self):
         dir = "apps/models/prompt/prompt_template.yaml"
-        #dir = "./prompt/prompt_template.yaml"
         tmpl = self.load_yaml(dir)
         return tmpl
 
