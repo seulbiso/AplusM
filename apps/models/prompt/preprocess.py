@@ -4,8 +4,8 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 class Prompt:
 
-    def __init__(self, type="basic"):
-        self.type = type
+    def __init__(self, mode="basic"):
+        self.mode = mode
 
     def load_yaml(self, dir):
         with open(dir, encoding='utf8') as f:
@@ -20,7 +20,7 @@ class Prompt:
     def write_prompt(self):
         
         template = self.load_template()
-        prompt_template = template[self.type]
+        prompt_template = template[self.mode]
 
         prompt = PromptTemplate(
             input_variables=prompt_template["input_variables"], 
