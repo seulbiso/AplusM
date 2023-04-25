@@ -2,8 +2,8 @@
 import os
 import sys
 import time
-from apps.models.prompt.preprocess import Prompt
-from apps.models.chat.basic import SimpleChat
+from flask.apps.models.prompt.preprocess import Prompt
+from flask.apps.models.chat.basic import SimpleChat
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 

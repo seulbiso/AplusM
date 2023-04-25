@@ -8,3 +8,10 @@ venv/
 
 # Key file
 config_model.json
+
+# env file
+.env
+
+# db data 
+db/data
+redis/data
