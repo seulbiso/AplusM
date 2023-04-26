@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, url_for, redirect, request, g , jsonify
+from flask import Blueprint, render_template, session, url_for, redirect, request, g, jsonify
 import random
 import jsonpickle
 
@@ -16,19 +16,22 @@ app = Blueprint('dist', __name__, url_prefix='/')
 
 @app.route('', methods=['GET'])
 def index():
-    #test_connect_db()
+    # test_connect_db()
     session.clear()
     if 'session_number' not in session:
         set_session()
-    
+
     return render_template('dist/index.html')
+
 
 def test_connect_db():
     rows = history_head.query.all()
     print("rows ", rows)
 
+
 def set_session():
-    session['session_number'] = random.randrange(1,100)
+    session['session_number'] = random.randrange(1, 100)
+
 
 @app.route('clear', methods=['GET'])
 def clear():
@@ -36,15 +39,14 @@ def clear():
     return redirect(url_for('.index'))
 
 
-@app.route('chat', methods= ['POST'])
+@app.route('chat', methods=['POST'])
 def chat():
 
     # Persona(dict)
-    persona = {"persona_age":"60", "persona_personality":"따뜻한 엄마같은"}
+    persona = {"persona_age": "60", "persona_personality": "따뜻한 엄마같은"}
 
     # User Info(dict)
-    user_info = {"user_info_age":"24", "user_info_job":"취업준비생"}
-
+    user_info = {"user_info_age": "24", "user_info_job": "취업준비생"}
 
     # Check if SimpleChat instance exists in session
     if 'simple_chat' not in session:
@@ -56,36 +58,23 @@ def chat():
     else:
         # Retrieve SimpleChat instance from session
         simple_chat = jsonpickle.decode(session['simple_chat'])
-    
+
 
     if request.method == 'POST':
-<<<<<<< Updated upstream
         # Get user input from form data
-        input = request.form['chatMessage']
+        input = request.form['chat_Q']
+        persona = request.form['persona']
+        user_info = request.form['user_info']
         output = simple_chat.chain(input)
         
         #print output
         print(output)
+        print(persona)
+        print(user_info)
         session['simple_chat'] = simple_chat.to_json()
-    
+
         response= {
-            'chatMessage' : output
+            'chat_A' : output
         }
 
     return jsonify(response)
-=======
-        temp = request.form['chat_Q']
-    elif request.method == 'GET':
-        pass
-    return render_template('dist/index.html', chat_Q=temp)
-
-
-
-
-
-
-
->>>>>>> Stashed changes
-
-
-

@@ -6100,7 +6100,8 @@ progress {
 .form-label {
   font-size: .75rem;
   font-weight: 700;
-  margin-bottom: .3125rem
+  margin-bottom: .3125rem;
+  color:white
 }
 
 .col-form-label {
@@ -6146,7 +6147,7 @@ progress {
   line-height: 1.5;
   padding: .625rem .75rem;
   transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-  width: 100%
+  width: 85%
 }
 
 @media(prefers-reduced-motion:reduce) {
@@ -6337,7 +6338,7 @@ textarea.form-control-lg {
 
 .form-control-color.form-control-sm {
   height: calc(1.5em + .75rem + 2px)
-}
+}selec
 
 .form-control-color.form-control-lg {
   height: calc(1.5em + 1.375rem + 2px)
@@ -6363,7 +6364,7 @@ textarea.form-control-lg {
   line-height: 1.5;
   padding: .625rem 2.25rem .625rem .75rem;
   transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-  width: 100%
+  width: 85%
 }
 
 @media(prefers-reduced-motion:reduce) {
@@ -41994,4 +41995,12 @@ code.hljs {
 
 #navbar.show {
   display: block;
+}
+
+.radio-input {
+  margin-right: 10px;
+}
+
+.form-check-label{
+  color:white;
 }

@@ -170,116 +170,77 @@
             }
         </script>
         <div class="container-fluid">
-
-            <!-- Navbar toggler -->
-            <a href="javascript: void(0);" class="navbar-toggler" data-bs-toggle="collapse"
-                data-bs-target="#sidenavCollapse" aria-controls="sidenavCollapse" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </a>
-
             <!-- Collapse -->
             <div class="collapse navbar-collapse" id="sidenavCollapse">
 
                 <!-- Navigation -->
                 <ul class="navbar-nav mb-lg-7" id="navbar">
                     <li class="nav-item">
-                      <a class="nav-link active" href="#dashboardsCollapse" data-bs-toggle="collapse" role="button"
-                        aria-expanded="true" aria-controls="dashboardsCollapse">
-                        <svg viewBox="0 0 24 24" class="nav-link-icon" height="18" width="18" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M3.753,13.944v8.25h6v-6a1.5,1.5,0,0,1,1.5-1.5h1.5a1.5,1.5,0,0,1,1.5,1.5v6h6v-8.25"
-                            fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                          <path d="M.753,12.444,10.942,2.255a1.5,1.5,0,0,1,2.122,0L23.253,12.444" fill="none"
-                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                        </svg>
-                        <span>User Info</span>
-                      </a>
-                      <div class="collapse show">
-                        <ul class="nav flex-column">
-                          <li class="nav-item">
-                            <a class="nav-link active">
-                              <div class="col-md">
-                                <label for="projectName" class="form-label">이름</label>
-                              </div>
-                            </a>
-                            <input type="text" class="form-control px-3" id="projectName" placeholder="Your name" required>
-                            <div class="invalid-feedback">Please add your full name</div>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link active">
-                              <span>성별</span>
-                            </a>
-                            <a class="nav-link active">
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+                        <a class="nav-link active" aria-expanded="true" aria-controls="dashboardsCollapse">
+                            <span>User Info</span>
+                        </a>
+                        <br>
+                        <div class="form-check">
+                            <label for="projectName" class="form-label">이름</label>
+                            <input type="text" class="form-control px-3" id="user_info_name" placeholder="이름을 입력하세요" required>
+                            <br>
+                            <label class="form-label">성별</label>
+                            <br>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_info_sex" id="user_info_man" value="남자">
                                 <label class="form-check-label" for="inlineRadio1">남자</label>
-                              </div>
-                              <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_info_sex" id="user_info_woman" value="여자">
                                 <label class="form-check-label" for="inlineRadio2">여자</label>
-                              </div>
-                            </a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link active">
-                              <span>나이</span>
-                              <select class="form-select" aria-label="Default select example">
+                            </div>
+                            <br>
+                            <label for="age" class="form-label">나이</label>
+                            <select class="form-select" id="user_info_age" aria-label="나이를 선택하세요">
                                 <option selected></option>
-                                <option value="1">24</option>
-                                <option value="2">25</option>
-                                <option value="3">26</option>
-                              </select>
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                            </select>
+                            <br>
+                            <label for="job" class="form-label">직업</label>
+                            <select class="form-select" id="user_info_job" aria-label="직업을 선택하세요">
+                                <option selected></option>
+                                <option value="백수">백수</option>
+                                <option value="아르바이트생">아르바이트생</option>
+                                <option value="은행원">은행원</option>
+                                <option value="개발자">개발자</option>
+                            </select>
+                        </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#pagesCollapse" data-bs-toggle="collapse" role="button"
-                            aria-expanded="false" aria-controls="pagesCollapse">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="nav-link-icon"
-                                height="18" width="18">
-                                <defs>
-                                    <style>
-                                        .a {
-                                            fill: none;
-                                            stroke: currentColor;
-                                            stroke-linecap: round;
-                                            stroke-linejoin: round;
-                                            stroke-width: 1.5px;
-                                        }
-                                    </style>
-                                </defs>
-                                <title>common-file-double-1</title>
-                                <path class="a" d="M17.25,23.25H3.75a1.5,1.5,0,0,1-1.5-1.5V5.25" />
-                                <rect class="a" x="5.25" y="0.75" width="16.5" height="19.5" rx="1" ry="1" />
-                            </svg>
+                        <a class="nav-link active" aria-expanded="true" aria-controls="dashboardsCollapse">
                             <span>Persona</span>
                         </a>
                         <div class="form-check">
                             <a class="nav-link">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                    id="flexRadioDefault1" checked>
-                                <span class="form-check-label" for="flexRadioDefault1">
+                                <input class="form-check-input radio-input" type="radio" name="persona_choice" id="persona_one" value="38세, 백수, 남자">
+                                <label class="form-check-label">
                                     38세, 백수, 남자
-                                </span>
+                                </label>
                             </a>
                         </div>
                         <div class="form-check">
                             <a class="nav-link">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                    id="flexRadioDefault2">
-                                <label class="form-check-label" for="flexRadioDefault2">
+                                <input class="form-check-input radio-input" type="radio" name="persona_choice" id="persona_two" value="25세, 대학생, 여자">
+                                <label class="form-check-label">
                                     25세, 대학생, 여자
                                 </label>
                             </a>
                         </div>
                         <div class="form-check">
                             <a class="nav-link">
-                                <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                    id="flexRadioDefault3">
-                                <label class="form-check-label" for="flexRadioDefault3">
+                                <input class="form-check-input radio-input" type="radio" name="persona_choice" id="persona_three" value="47세, 은행원, 남자">
+                                <label class="form-check-label">
                                     47세, 은행원, 남자
                                 </label>
                             </a>
