@@ -30,7 +30,6 @@ class SimpleChat:
 
         output = self.chatgpt_chain.predict(input=input)
 
-        self.test()
         return output
 
     def to_json(self):

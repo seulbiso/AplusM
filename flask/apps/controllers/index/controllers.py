@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, url_for, redirect, request, g
+from flask import Blueprint, render_template, session, url_for, redirect, request, g , jsonify
 import random
 import jsonpickle
 
@@ -11,17 +11,17 @@ from apps.models.chat.basic import SimpleChat
 
 from apps.database.models import history_head
 
-app = Blueprint('index', __name__, url_prefix='/')
+app = Blueprint('dist', __name__, url_prefix='/')
 
 
 @app.route('', methods=['GET'])
 def index():
-    test_connect_db()
-    
+    #test_connect_db()
+    session.clear()
     if 'session_number' not in session:
         set_session()
     
-    return render_template('layout/index.html')
+    return render_template('dist/index.html')
 
 def test_connect_db():
     rows = history_head.query.all()
@@ -60,12 +60,18 @@ def chat():
 
     if request.method == 'POST':
         # Get user input from form data
-        input = request.form['chat_Q']
+        input = request.form['chatMessage']
         output = simple_chat.chain(input)
-
+        
+        #print output
+        print(output)
         session['simple_chat'] = simple_chat.to_json()
     
-    return render_template('layout/index.html',session_number=session['session_number'], chat_A = output)
+        response= {
+            'chatMessage' : output
+        }
+
+    return jsonify(response)
 
 
 
