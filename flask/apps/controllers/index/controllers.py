@@ -60,7 +60,7 @@ def chat():
 
     if request.method == 'POST':
         # Get user input from form data
-        input = request.form['chatMessage']
+        input = request.form['chat_Q']
         output = simple_chat.chain(input)
         
         #print output
@@ -68,7 +68,7 @@ def chat():
         session['simple_chat'] = simple_chat.to_json()
     
         response= {
-            'chatMessage' : output
+            'chat_A' : output
         }
 
     return jsonify(response)
