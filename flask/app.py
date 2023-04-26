@@ -4,8 +4,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
-from apps.controllers.router import create_app 
-app = create_app()
+from apps.controllers.router import app
 
 
 if __name__ == '__main__':
