@@ -41991,3 +41991,7 @@ code.hljs {
 .bot-message {
   justify-content: flex-start;
 }
+
+#navbar.show {
+  display: block;
+}

@@ -8,9 +8,11 @@ $(document).ready(() => {
             $.ajax({
                 url: "/chat",
                 type: "POST",
-                data: { chatMessage: message },
+                data: { chat_Q: message },
                 success: function (data) {
-                    console.log(data);
+                    console.log("===========");
+                    console.log(data.message);
+                    console.log("===========");
                     var isUserMessage = true;
                     var messageContainerClass = isUserMessage ? 'user-message' : 'bot-message';
                     $('#chat_Q').prepend(
@@ -31,18 +33,19 @@ $(document).ready(() => {
                         '<div class="d-flex mb-6 ' + messageContainerClass + '">'
                         + '<div class="d-flex flex-column align-items-' + (isUserMessage ? 'end' : 'start') + '">'
                         + '<div class="mb-1 p-4 rounded-end rounded-bottom bg-gray-300">'
-                        + data.chatMessage // display the chatbot's message received from the server
+                        + data.chat_A // display the chatbot's message received from the server
                         + '</div>'
                         + '</div>'
                         + '<div>'
                         + '</div>'
                         + '</div>'
                     );
-                  },
-                  error: function (xhr, status, error) {
+                },
+                error: function (xhr, status, error) {
                     console.log(xhr.responseText);
-                  }
+                }
             });
+
         }
     });
 
@@ -53,10 +56,22 @@ $(document).ready(() => {
         }
     });
 
-    $('resetThemeConfig').on("click", function(e){
+    $('resetThemeConfig').on("click", function (e) {
         $.ajax({
-                url: "/chat",
-                type: "GET"
+            url: "/chat",
+            type: "GET"
         });
     });
+
+    const navbar = document.getElementById('navbar');
+    const navbarToggle = document.getElementById('navbar-toggle');
+
+    // navbarToggle.addEventListener('click', function () {
+    //     if (navbar.classList.contains('show')) {
+    //         navbar.classList.remove('show');
+    //     } else {
+    //         navbar.classList.add('show');
+    //     }
+    // });
+
 });

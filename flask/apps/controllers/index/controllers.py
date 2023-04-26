@@ -59,6 +59,7 @@ def chat():
     
 
     if request.method == 'POST':
+<<<<<<< Updated upstream
         # Get user input from form data
         input = request.form['chatMessage']
         output = simple_chat.chain(input)
@@ -72,6 +73,19 @@ def chat():
         }
 
     return jsonify(response)
+=======
+        temp = request.form['chat_Q']
+    elif request.method == 'GET':
+        pass
+    return render_template('dist/index.html', chat_Q=temp)
+
+
+
+
+
+
+
+>>>>>>> Stashed changes
 
 
 
