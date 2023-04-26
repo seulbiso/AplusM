@@ -2,6 +2,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
 from config import ModelConfig
+from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 class SimpleChat:
     '''
@@ -11,6 +12,12 @@ class SimpleChat:
     def __init__(self, prompt):
         self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
         self.prompt = prompt
+        self.chatgpt_chain = ConversationChain(
+            llm = self.llm, 
+            prompt = self.prompt,
+            verbose = True, 
+            memory = ConversationBufferMemory(return_messages=True)
+        )
 
 
     def chain(self, input):
@@ -21,14 +28,7 @@ class SimpleChat:
             - output(string): GPT 모델의 답변
         '''
 
-        chatgpt_chain = ConversationChain(
-            llm = self.llm, 
-            prompt = self.prompt,
-            verbose = True, 
-            memory = ConversationBufferMemory(return_messages=True)
-        )
-       
-        output = chatgpt_chain.predict(input=input)
+        output = self.chatgpt_chain.predict(input=input)
 
         return output
 
