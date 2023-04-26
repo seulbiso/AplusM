@@ -1,5 +1,5 @@
 from langchain import PromptTemplate
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
 
 class Preprocess:
@@ -8,7 +8,7 @@ class Preprocess:
     '''
 
     def __init__(self):
-        self.base = '''\nCurrent conversation:\n{history}\nHuman: {input}\nAI:\n'''
+        self.base = '''\nCurrent conversation:\n{history}\n'''
 
 
     def persona(self, persona:dict):
@@ -56,7 +56,7 @@ class Prompt(Preprocess):
             - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
         '''
 
-        input_variables = ["history", "input"]
+        input_variables = ["history"]
 
         chat_prompt = PromptTemplate(
             input_variables = input_variables,
@@ -64,7 +64,8 @@ class Prompt(Preprocess):
             )
         
         prompt = ChatPromptTemplate.from_messages([
-                SystemMessagePromptTemplate(prompt=chat_prompt)
+                SystemMessagePromptTemplate(prompt=chat_prompt),
+                HumanMessagePromptTemplate.from_template("{input}")
                 ])
 
         return prompt
