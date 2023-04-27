@@ -22,8 +22,11 @@ class Preprocess:
         '''
         res = self.template["persona"]["default"]
 
-        # if persona == "친절한 상담원":
-        #     res = self.template["persona"]["default"]
+        if persona == "시니컬한 고양이":
+            res = self.template["persona"]["cat"]
+        elif persona == "지혜로운 노인":
+            res = self.template["persona"]["elder"]
+        else: res = res
 
         return res
     
