@@ -37822,7 +37822,7 @@ html:not([data-sidebar-behaviour=condensed]) .navbar.navbar-dark {
 }
 
 .scroll-shadow:after {
-  background: var(--bs-white);
+  
   position: absolute;
   width: 100%
 }
