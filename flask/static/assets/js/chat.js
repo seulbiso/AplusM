@@ -25,6 +25,7 @@ $(document).ready(() => {
                 success: function (data) {
                     isUserMessage = false;
                     messageContainerClass = isUserMessage ? 'user-message' : 'bot-message';
+                    $('#loading2').remove();
                     $('#chat_Q').prepend(
                         '<div class="d-flex mb-6 ' + messageContainerClass + '">'
                         + '<div class="d-flex flex-column align-items-' + (isUserMessage ? 'end' : 'start') + '">'
@@ -57,6 +58,24 @@ $(document).ready(() => {
             + '</div>'
         );
 
+        isUserMessage = false;
+        messageContainerClass = isUserMessage ? 'user-message' : 'bot-message';
+        $('#chat_Q').prepend(
+            '<div id = "loading2"></div>'
+        )
+
+        $('#loading2').append(
+            '<div class="d-flex' + messageContainerClass + '">'
+            + '<div class="d-flex flex-column align-items-' + (isUserMessage ? 'end' : 'start') + '">'
+            + '<div class="d-flex justify-content-bottom mb-6">'
+            + ' <div class="mb-1 p-4 rounded-start rounded-end bg-gray-300" style="display:inline-block"><span class= "typing"></span><span class= "typing"></span></div>'
+            + '</div>'
+            + '</div>'
+            + '</div>'
+        );
+
+        
+
         if (message) {
             $("#message").val("");
         }
@@ -77,7 +96,7 @@ $(document).ready(() => {
     });
 
     $('#persona_one').prop("checked", true);
-    
+
 
     $('input[type="radio"]').on('change', function () {
         var check_persona = $('input[name="persona_choice"]:checked').val();
