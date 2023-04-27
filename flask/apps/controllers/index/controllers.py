@@ -16,7 +16,7 @@ app = Blueprint('dist', __name__, url_prefix='/')
 
 @app.route('', methods=['GET'])
 def index():
-    #test_connect_db()
+    test_connect_db()
     session.clear()
     if 'session_number' not in session:
         set_session()

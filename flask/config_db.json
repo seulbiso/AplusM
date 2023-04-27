@@ -2,7 +2,7 @@
     "MARIA_DB" : {
         "DB_USER_NAME" : "atm",
         "DB_USER_PASSWD" : "atm",
-        "DB_HOST" : "localhost",
+        "DB_HOST" : "3.39.25.15",
         "DB_PORT" : "3306",
         "DB_NAME" : "atm"
 
