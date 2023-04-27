@@ -68,11 +68,13 @@ $(document).ready(() => {
             '<div class="d-flex' + messageContainerClass + '">'
             + '<div class="d-flex flex-column align-items-' + (isUserMessage ? 'end' : 'start') + '">'
             + '<div class="d-flex justify-content-bottom mb-6">'
-            + ' <div class="mb-1 p-4 rounded-start rounded-bottom bg-gray-300 typing" style="display:block"></div>'
+            + ' <div class="mb-1 p-4 rounded-start rounded-end bg-gray-300" style="display:inline-block"><span class= "typing"></span><span class= "typing"></span></div>'
             + '</div>'
             + '</div>'
             + '</div>'
         );
+
+        
 
         if (message) {
             $("#message").val("");
