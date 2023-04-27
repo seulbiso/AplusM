@@ -15,3 +15,5 @@ config_model.json
 # db data 
 db/data
 redis/data
+
+test/
