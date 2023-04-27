@@ -7,7 +7,8 @@ $(document).ready(() => {
         var check_persona = $('input[name="persona_choice"]:checked').val();
         var check_user_info_age = $('#user_info_age option:selected').val();
         var check_user_info_job = $('#user_info_job option:selected').val();
-        var user_info = {"user_info_name":check_user_info_name,"user_info_age": check_user_info_age, "user_info_sex":check_sex,"user_info_job": check_user_info_job};
+        var check_user_info_hobby = $('#user_info_hobby').val();
+        var user_info = {"user_info_name":check_user_info_name,"user_info_age": check_user_info_age, "user_info_sex":check_sex,"user_info_job": check_user_info_job,"user_info_hobby": check_user_info_hobby};
 
         console.log(check_persona);
         console.log(check_sex);
