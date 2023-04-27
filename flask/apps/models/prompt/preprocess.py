@@ -44,9 +44,9 @@ class Preprocess:
         job = user_info["user_info_job"]
         hobby = user_info["user_info_hobby"]
 
-        return f'''(Human's Information)
+        return f'''(Questioner's Information)
         Name: {name}
-        Age: {age}
+        Age Group: {age}
         Sex: {sex}
         Job: {job}
         Hobby: {hobby}
