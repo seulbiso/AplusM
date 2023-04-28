@@ -6,7 +6,7 @@ services:
     restart: always
     depends_on:
       - db
-      - redis
+      #- redis
     environment:
       - APP_NAME=FlaskAPP
     ports:
@@ -25,23 +25,27 @@ services:
     build: ./db
     # 컨테이너명
     container_name: db
-    env_file: .env
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     restart: always
     # 접근 포트 설정(컨테이너 외부:컨테이너 내부)
     ports:
       - ${MYSQL_PORT}:${MYSQL_PORT}
     # 스토리지 마운트(볼륨) 설정
     volumes:
-      - ${MYSQL_DEFAULT_CONFIG_FILE}:/etc/mysql/conf.d
+      - ${MYSQL_DEFAULT_CONFIG_FILE}:/e4tc/mysql/conf.d
       - ${MYSQL_DATA_PATH}:/var/lib/mysql
       - ${MYSQL_INIT_DB_PATH}:/docker-entrypoint-initdb.d
-    environment:
-      TZ: Asia/Seoul
+
   
   redis: 
     build: ./redis
     container_name: redis
-    env_file: .env
     restart: always
     ports: # 바인딩할 포트:내부 포트
       - ${REDIS_BINDING_PORT}:${REDIS_PORT}
