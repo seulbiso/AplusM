@@ -8,6 +8,7 @@ venv/
 
 # Key file
 config_model.json
+config_db.json
 
 # env file
 .env
@@ -15,3 +16,5 @@ config_model.json
 # db data 
 db/data
 redis/data
+
+test/

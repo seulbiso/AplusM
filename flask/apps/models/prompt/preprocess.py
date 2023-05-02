@@ -1,5 +1,6 @@
+import yaml
 from langchain import PromptTemplate
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
 
 class Preprocess:
@@ -8,20 +9,26 @@ class Preprocess:
     '''
 
     def __init__(self):
-        self.base = '''\nCurrent conversation:\n{history}\nHuman: {input}\nAI:\n'''
+        self.base = '''\nCurrent conversation:\n{history}\n'''
+        self.template = self.load_template()
+        self.instruction = self.template["instruction"]
 
-
-    def persona(self, persona:dict):
+    def persona(self, persona:str="친절한 상담원"):
         '''
         Args:
-            - persona(dict): 사용자가 입력한 persona 정보
+            - persona(string): 사용자가 입력한 persona 정보
         Returns:
             - __(string) persona 정보가 담긴 prompt
-        '''                
+        '''
+        res = self.template["persona"]["default"]
 
-        age = persona["persona_age"]
-        personality = persona["persona_personality"]
-        return f"AI는 나이가 {age}살이고 {personality} 성격을 가진 사람이야. "
+        if persona == "시니컬한 고양이":
+            res = self.template["persona"]["cat"]
+        elif persona == "지혜로운 노인":
+            res = self.template["persona"]["elder"]
+        else: res = res
+
+        return res
     
     
     def user_info(self, user_info:dict):
@@ -31,10 +38,29 @@ class Preprocess:
         Returns:
             - __(string): user 정보가 담긴 prompt
         '''
-
+        name = user_info["user_info_name"]
         age = user_info["user_info_age"]
+        sex = user_info["user_info_sex"]
         job = user_info["user_info_job"]
-        return f"Human은 {age}살이고 {job}이야."
+        hobby = user_info["user_info_hobby"]
+
+        return f'''(Questioner's Information)
+        Name: {name}
+        Age Group: {age}
+        Sex: {sex}
+        Job: {job}
+        Hobby: {hobby}
+
+        '''
+    def load_yaml(self, dir):
+        with open(dir, encoding='utf8') as f:
+            res =yaml.load(f, Loader=yaml.FullLoader)
+        return res
+
+    def load_template(self):
+        dir = "apps/models/prompt/prompt_template.yaml"
+        tmpl = self.load_yaml(dir)
+        return tmpl
     
     
 
@@ -56,15 +82,16 @@ class Prompt(Preprocess):
             - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
         '''
 
-        input_variables = ["history", "input"]
+        input_variables = ["history"]
 
         chat_prompt = PromptTemplate(
             input_variables = input_variables,
-            template = self.persona(persona=persona) + self.user_info(user_info=user_info) + self.base
+            template = self.instruction + self.persona(persona=persona) + self.user_info(user_info=user_info) + self.base
             )
         
         prompt = ChatPromptTemplate.from_messages([
-                SystemMessagePromptTemplate(prompt=chat_prompt)
+                SystemMessagePromptTemplate(prompt=chat_prompt),
+                HumanMessagePromptTemplate.from_template("{input}")
                 ])
 
         return prompt
