@@ -19,16 +19,13 @@ def chat():
     current_app.logger.info("POST /CHAT")
 
 
-    PubsubChatLog.publish('POST /CHAT')
     if request.method == 'POST':
 
-        PubsubChatLog.publish('Get user input from form data')
         # Get user input from form data
         input = request.form['chat_Q']
         persona = request.form['persona']
         user_info = json.loads(request.form['user_info'])
 
-        PubsubChatLog.publish('Check if SimpleChat instance exists in session')
         # Check if SimpleChat instance exists in session
         if 'simple_chat' not in session:
             # Create a new SimpleChat instance and store it in session
@@ -37,13 +34,13 @@ def chat():
             session['simple_chat'] = simple_chat.to_json()
 
         else:
-            PubsubChatLog.publish('Retrieve SimpleChat instance from session')
             # Retrieve SimpleChat instance from session
             simple_chat = jsonpickle.decode(session['simple_chat'])     
 
+        PubsubChatLog.publish('답변 생성 ing...........')
         output = simple_chat.chain(input)   
 
-        PubsubChatLog.publish('chat_A %s'%(output))
+        PubsubChatLog.publish('답변 생성 완료 %s'%(output))
     
         session['simple_chat'] = simple_chat.to_json()
 
