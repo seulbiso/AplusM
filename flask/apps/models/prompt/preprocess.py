@@ -1,7 +1,8 @@
 import yaml
-from langchain import PromptTemplate
+from langchain import PromptTemplate, SerpAPIWrapper
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-
+from langchain.agents import ZeroShotAgent, Tool
+from config import ModelConfig
 
 class Preprocess:
     '''
@@ -97,3 +98,46 @@ class Prompt(Preprocess):
         log = self.instruction + self.persona(persona=persona) + self.user_info(user_info=user_info)
 
         return prompt
+    
+
+class BrowsePrompt(Preprocess):
+    '''
+    기본 Prompt + Agent + History + Input = Agent Prompt Template
+    Langchain에서 제공하는 Prompt Template 객체로 생성한다.
+    '''
+        
+    def __init__(self):
+        super().__init__()
+        self.params ={
+            "engine": "google",
+            "hl": "ko",
+            "gl": "kr"
+        }
+        self.search = SerpAPIWrapper(params=self.params, serpapi_api_key = ModelConfig.SERP.API_KEY)
+        self.tools = [
+            Tool(
+                name = "Search",
+                func= self.search.run,
+                description="useful for when you need to answer questions about current events"
+            )
+        ]
+
+    def write_prompt(self, persona:dict, user_info:dict):
+        '''
+        Args:
+            - persona(dict): 사용자가 입력한 persona 정보
+            - user_info(dict): 사용자가 입력한 user 정보
+        Returns:
+            - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
+        '''
+
+        input_variables = ["history", "input", "agent_scratchpad"]
+
+        chat_prompt = ZeroShotAgent.create_prompt(
+                self.tools, 
+                prefix=self.instruction + self.persona(persona=persona),
+                suffix=self.user_info(user_info=user_info) +self.base + "{input}" + "{agent_scratchpad}", 
+                input_variables=input_variables
+            )
+
+        return chat_prompt

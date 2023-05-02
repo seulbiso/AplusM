@@ -5,7 +5,7 @@ from config import ModelConfig
 import jsonpickle
 
 from langchain import SerpAPIWrapper, LLMChain
-from langchain.agents import ZeroShotAgent, Tool, initialize_agent, AgentExecutor
+from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
 
 
 class SimpleChat:
@@ -41,10 +41,12 @@ class SimpleChat:
     
 class BrowseChat:
     '''
-    ********** 수정 중 ************
+    SimpleChat에 Google Search API를 연결해 Browsing 기능이 적용된 Conversation Chain을 생성한다.
     '''
 
-    def __init__(self):  ## prompt, memory 서치 필요
+    def __init__(self, prompt):
+
+        # Tool 생성
         self.params ={
             "engine": "google",
             "hl": "ko",
@@ -59,24 +61,16 @@ class BrowseChat:
                 description="useful for when you need to answer questions about current events"
             )
         ]
-        self.prompt = ZeroShotAgent.create_prompt(
-                self.tools, 
-                prefix="""Have a conversation with a human, answering the following questions as best you can. You have access to the following tools:""", 
-                suffix='''{chat_history} \n (Questioner's Information)
-                Name: {name}
-                Age Group: {age}
-                Sex: {sex}
-                Job: {job}
-                Hobby: {hobby}
+        
+        self.memory = ConversationBufferMemory(memory_key="history")
 
-                (Question)
-                {input}
-                ''', 
-                input_variables=["input", "chat_history", "name", "age", "sex","job","hobby"]
-            )
-        self.memory = ConversationBufferMemory(memory_key="chat_history")
-        # self.llm_chain = ConversationChain(llm=self.llm, prompt=self.prompt)
-        self.llm_chain = LLMChain(llm=self.llm, prompt=self.prompt)
+        # Agent 생성
+        self.llm_chain = LLMChain(llm=self.llm, prompt=prompt)
+        self.agent = ZeroShotAgent(llm_chain=self.llm_chain, tools=self.tools, verbose=True)
+
+        # Chain 생성 = Agent + Tools + Memory
+        self.agent_chain = AgentExecutor.from_agent_and_tools(agent=self.agent, tools=self.tools, verbose=True, memory=self.memory)
+
 
     def chain(self, input):
         '''
@@ -85,12 +79,8 @@ class BrowseChat:
         Returns:
             - output(string): GPT 모델의 답변
         '''
-        # agent = initialize_agent(self.tools, self.llm, agent="zero-shot-react-description", verbose=True)   ## agent 서치 필요
-        # output = agent.run(input)
-        agent = ZeroShotAgent(llm_chain=self.llm_chain, tools=self.tools, verbose=True)
-        agent_chain = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=True, memory=self.memory)
-        # output = agent_chain.run(input)
-        output = agent_chain.run({"name":"안재형","age":"24","sex":"남성", "job":"교수","hobby":"골프", "input":"2023년 현재 대한민국의 대통령은?"})
+
+        output = self.agent_chain.run({"input":input})
 
         return output
 
