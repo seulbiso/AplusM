@@ -93,5 +93,7 @@ class Prompt(Preprocess):
                 SystemMessagePromptTemplate(prompt=chat_prompt),
                 HumanMessagePromptTemplate.from_template("{input}")
                 ])
+        
+        log = self.instruction + self.persona(persona=persona) + self.user_info(user_info=user_info)
 
         return prompt

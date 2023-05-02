@@ -8,10 +8,14 @@ class ChatService:
     def __init__(self, mode = "default", prompt=None):
         if mode == "default":
             self.chat = SimpleChat(prompt)
+            ### log: GPT 검색 중입니다.
         elif mode == "browsing":
-            self.chat = BrowseChat(prompt)
+            # self.chat = BrowseChat(prompt)
+            self.chat = BrowseChat()
+            ### log: Google 검색 중입니다.
         elif mode == "docs":
             self.chat = DocsChat(prompt)
+            ### log: 문서를 읽어오는 중입니다.
         self.number = 0
     
 
@@ -19,7 +23,7 @@ class ChatService:
         self.number += 1
         output = self.chat.chain(chat_Q)
         record = self.save(*params)  ## return x 수정 예정
-        return output
+        return output, record
 
     def save(self, *params):
         conversation_chain = self.chat.chatgpt_chain
