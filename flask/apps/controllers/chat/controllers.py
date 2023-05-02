@@ -19,7 +19,7 @@ def chat():
     current_app.logger.info("POST /CHAT")
 
 
-    PubsubChatLog.publish('POST /CHAT ')
+    PubsubChatLog.publish('POST /CHAT')
     if request.method == 'POST':
 
         PubsubChatLog.publish('Get user input from form data')
