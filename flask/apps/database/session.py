@@ -6,7 +6,7 @@ from apps.controllers.router import app
 
 
 db = SQLAlchemy(app)
-cache = Redis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
+cache = Redis(host='redis', port=Config.REDIS_PORT)
 
 
 
