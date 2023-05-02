@@ -21,7 +21,6 @@ class Pubsub:
         channel : redis channel name / default chat_log:{session_number}
         message : message 
         '''
-        current_app.logger.info("RUN publish %s , %s" %(channel, message))
         red.publish(channel=channel, message=message) 
             
         
@@ -35,8 +34,8 @@ class PubsubChatLog(Pubsub):
         GET redis channel name => chat_log:{session_number}
         '''
         prefix = 'chat_log'
-        session_number = session['session_number']
-        return super().publish_channel_name(prefix=prefix,channel=session_number)
+        channel = session['session_number']
+        return super().publish_channel_name(prefix=prefix,channel=channel)
 
 
     @classmethod

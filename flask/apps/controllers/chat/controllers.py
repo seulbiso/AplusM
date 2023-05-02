@@ -1,4 +1,5 @@
-from flask import Blueprint, session, request, jsonify, current_app, Flask
+from flask import Blueprint, session, request, jsonify, current_app
+import flask
 import jsonpickle, json
 
 
@@ -58,20 +59,19 @@ def chat():
 #     rows = history_head.query.all()
 #     print("rows ", rows)
 
-def event_stream():
+def event_stream(channel):
     pubsub = cache.pubsub()
-    pubsub.subscribe(PubsubChatLog.publish_channel_name())
-    current_app.logger.info("RUN event_stream %s" %(PubsubChatLog.publish_channel_name()))
+    pubsub.subscribe(channel)
+    # current_app.logger.info("RUN event_stream %s" %(channel))
     # TODO: handle client disconnection.
     for message in pubsub.listen():
-        print (message)
         if message['type']=='message':
             data = 'data: %s\n\n' % message['data'].decode('utf-8')
-            current_app.logger.info(data)
+            print ("message in pubsub.listen()" , data)
             yield data
 
 
 @app.route('/stream')
 def stream():
-    return Flask.Response(event_stream(),
+    return flask.Response(event_stream(channel=PubsubChatLog.publish_channel_name()),
                           mimetype="text/event-stream")
