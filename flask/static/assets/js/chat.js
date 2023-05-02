@@ -1,3 +1,4 @@
+
 $(document).ready(() => {
     $("#submit_msg").on("click", function (e) {
         e.preventDefault();
@@ -17,12 +18,14 @@ $(document).ready(() => {
             $.ajax({
                 url: "/chat",
                 type: "POST",
+                //user 정보, Persona 정보, 메시지 값
                 data: { chat_Q: message,
-                        user_info: "tesxt",
                         user_info: JSON.stringify(user_info),
                         persona: check_persona
                 },
                 success: function (data) {
+                    
+                    //bot 채팅화면
                     isUserMessage = false;
                     messageContainerClass = isUserMessage ? 'user-message' : 'bot-message';
                     $('#loading2').remove();
@@ -44,6 +47,7 @@ $(document).ready(() => {
             });
         }
 
+        // user 채팅화면
         var isUserMessage = true;
         var messageContainerClass = isUserMessage ? 'user-message' : 'bot-message';
         $('#chat_Q').prepend(
@@ -57,7 +61,8 @@ $(document).ready(() => {
             + '</div>'
             + '</div>'
         );
-
+        
+        // 대화 Loading 기다리는 표시
         isUserMessage = false;
         messageContainerClass = isUserMessage ? 'user-message' : 'bot-message';
         $('#chat_Q').prepend(
@@ -74,13 +79,14 @@ $(document).ready(() => {
             + '</div>'
         );
 
-        
-
+        //메시지 입력 후 초기화
         if (message) {
             $("#message").val("");
         }
     });
 
+
+    // Enter로 메시지 입력
     $("#message").on("keydown", function (e) {
         if (e.keyCode == 13) {
             e.preventDefault();
@@ -88,6 +94,7 @@ $(document).ready(() => {
         }
     });
 
+    // 화면 리셋 버튼
     $('resetThemeConfig').on("click", function (e) {
         $.ajax({
             url: "/",
@@ -95,25 +102,28 @@ $(document).ready(() => {
         });
     });
 
+    // 페르소나 Default 값 설정
     $('#persona_one').prop("checked", true);
 
-
+    // 페르소나 선택 시, 값 변경
     $('input[type="radio"]').on('change', function () {
         var check_persona = $('input[name="persona_choice"]:checked').val();
         console.log(check_persona);
     });
 
+    // user 성별 선택 시, 값 변경
     $('input[type="radio"]').on('change', function () {
         var check_sex = $('input[name="user_info_sex"]:checked').val();
         console.log(check_sex);
     });
 
-
+    // user 나이 선택 시, 값 변경
     $('#user_info_age').on('change', function () {
         var check_user_info_age = $('#user_info_age option:selected').val();
         console.log(check_user_info_age);
     });
 
+    // user 직업 선택 시, 값 변경
     $('#user_info_job').on('change', function () {
         var check_user_info_job = $('#user_info_job option:selected').val();
         console.log(check_user_info_job);

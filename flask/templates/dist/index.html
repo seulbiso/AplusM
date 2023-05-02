@@ -23,6 +23,7 @@
     </noscript>
     <!-- chat.js -->
     <script type="text/javascript" src="./static/assets/js/chat.js"></script>
+    <script type="text/javascript" src="./static/assets/js/chatlog.js"></script>
 
     <script>
         // Theme switcher
@@ -521,7 +522,8 @@
                     <div class="card border-0 flex-grow-1">
                         <div class="card-body py-0">
                             <div class="position-relative h-100 min-vh-50 min-vh-lg-auto">
-                                
+                                <div class="overflow-auto position-absolute w-100 h-100 pe-3 scroll-shadow" id="chat_log" style="overflow-y: auto; display: flex; flex-direction: column-reverse;">
+                                </div>
                             </div>
                         </div>
                     </div>

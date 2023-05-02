@@ -38,7 +38,6 @@ def clear():
     session.clear()
     return redirect(url_for('.index'))
 
-
 @app.route('chat', methods=['POST'])
 def chat():
 
