@@ -18,7 +18,6 @@ $(document).ready(() => {
                 url: "/chat",
                 type: "POST",
                 data: { chat_Q: message,
-                        user_info: "tesxt",
                         user_info: JSON.stringify(user_info),
                         persona: check_persona
                 },
