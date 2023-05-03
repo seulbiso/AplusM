@@ -71,6 +71,7 @@ class Config:
     DB_NAME = JsonConfig.get_data_db(DBMS).get("DB_NAME", 'flask')
 
     # REDIS 설정
+    DBMS = "REDIS"
     REDIS_HOST = JsonConfig.get_data_db(DBMS).get("REDIS_HOST",'localhost')
     REDIS_PORT = JsonConfig.get_data_db(DBMS).get("REDIS_PORT",'6379')
 
