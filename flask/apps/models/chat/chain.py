@@ -9,6 +9,7 @@ from langchain import SerpAPIWrapper, LLMChain
 from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
 
 from apps.database.pubsub import PubsubChatLog
+from time import sleep
 
 
 class SimpleChat:
@@ -33,6 +34,7 @@ class SimpleChat:
         Returns:
             - output(string): GPT 모델의 답변
         '''
+
         PubsubChatLog.publish('답변을 생성하고 있습니다.')
         output = self.chatgpt_chain.predict(input=input)
 
@@ -55,7 +57,7 @@ class BrowseChat:
             "hl": "ko",
             "gl": "kr"
         }
-        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.7)
+        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
         self.search = SerpAPIWrapper(params=self.params, serpapi_api_key = ModelConfig.SERP.API_KEY)
         self.tools = [
             Tool(
@@ -84,14 +86,19 @@ class BrowseChat:
         '''
         
         PubsubChatLog.publish('답변을 생성하고 있습니다.')
-        response =  self.agent_chain({"input":input})
+        sleep(2)
+        response = self.agent_chain({"input":input})
         output = response['output']
-        steps = json.dumps(response["intermediate_steps"], indent=2, ensure_ascii=False)
-        # output = self.agent_chain.run({"input":input})
-        # for thts in steps:
-        #     for obs in thts:
-        #         print(obs[-1])
-        # return output, steps
+        steps = json.loads(json.dumps(response["intermediate_steps"], indent=2, ensure_ascii=False))
+
+        # LOGGING
+        for i, step in enumerate(steps):
+            if i == 0:
+                PubsubChatLog.publish(step[0][-1])
+            else: 
+                PubsubChatLog.publish(f"Thought: {step[0][-1]}")
+            PubsubChatLog.publish(f"Observation: {step[-1]}")
+
         return output
 
     def to_json(self):
@@ -121,7 +128,7 @@ class DocsChat:
             - output(string): GPT 모델의 답변
         '''
 
-        # PubsubChatLog.publish('답변을 생성하고 있습니다.')
+        PubsubChatLog.publish('답변을 생성하고 있습니다.')
         output = self.chatgpt_chain.predict(input=input)
 
         return output

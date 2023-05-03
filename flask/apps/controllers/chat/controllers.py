@@ -22,7 +22,7 @@ def chat():
     if request.method == 'POST':
 
         # Get user input from form data
-        mode = 'mode_default'
+        mode = 'mode_browsing'
         input = request.form['chat_Q']
         persona = request.form['persona']
         user_info = json.loads(request.form['user_info'])

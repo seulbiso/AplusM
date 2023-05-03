@@ -74,15 +74,16 @@ class Prompt(Preprocess):
     def __init__(self):
         super().__init__()
 
-    def write_prompt(self, persona:dict, user_info:dict):
+    def write_prompt(self, persona:str, user_info:dict):
         '''
         Args:
-            - persona(dict): 사용자가 입력한 persona 정보
+            - persona(str): 사용자가 입력한 persona 정보
             - user_info(dict): 사용자가 입력한 user 정보
         Returns:
             - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
         '''
 
+        # LOGGING
         PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
 
         input_variables = ["history"]
@@ -96,7 +97,8 @@ class Prompt(Preprocess):
                 SystemMessagePromptTemplate(prompt=chat_prompt),
                 HumanMessagePromptTemplate.from_template("{input}")
                 ])
-        
+
+        # LOGGING
         log = self.instruction + self.persona(persona=persona)
         PubsubChatLog.publish('프롬프트가 생성되었습니다.')
         PubsubChatLog.publish(log)
@@ -125,7 +127,7 @@ class BrowsePrompt(Preprocess):
             )
         ]
 
-    def write_prompt(self, persona:dict, user_info:dict):
+    def write_prompt(self, persona:str, user_info:dict):
         '''
         Args:
             - persona(dict): 사용자가 입력한 persona 정보
@@ -134,6 +136,7 @@ class BrowsePrompt(Preprocess):
             - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
         '''
 
+        # LOGGING
         PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
 
         input_variables = ["history", "input", "agent_scratchpad"]
@@ -145,8 +148,8 @@ class BrowsePrompt(Preprocess):
                 input_variables=input_variables
             )
         
+        # LOGGING
         log = self.instruction + self.persona(persona=persona)
-        # PubsubChatLog.publish(f'프롬프트가 생성되었습니다.\n\n{log}')
         PubsubChatLog.publish('프롬프트가 생성되었습니다.')
         PubsubChatLog.publish(log)
 
