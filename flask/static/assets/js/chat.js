@@ -10,10 +10,8 @@ $(document).ready(() => {
         var check_user_info_job = $('#user_info_job option:selected').val();
         var check_user_info_hobby = $('#user_info_hobby').val();
         var user_info = {"user_info_name":check_user_info_name,"user_info_age": check_user_info_age, "user_info_sex":check_sex,"user_info_job": check_user_info_job,"user_info_hobby": check_user_info_hobby};
-
-        console.log(check_persona);
-        console.log(check_sex);
-        console.log(message);
+        var check_model = $('input[name="model_select"]:checked').val();
+        
         if (message.trim() !== "") {
             $.ajax({
                 url: "/chat",
@@ -21,7 +19,8 @@ $(document).ready(() => {
                 //user 정보, Persona 정보, 메시지 값
                 data: { chat_Q: message,
                         user_info: JSON.stringify(user_info),
-                        persona: check_persona
+                        persona: check_persona,
+                        check_model : check_model
                 },
                 success: function (data) {
                     
@@ -108,24 +107,25 @@ $(document).ready(() => {
     // 페르소나 선택 시, 값 변경
     $('input[type="radio"]').on('change', function () {
         var check_persona = $('input[name="persona_choice"]:checked').val();
-        console.log(check_persona);
     });
 
     // user 성별 선택 시, 값 변경
     $('input[type="radio"]').on('change', function () {
         var check_sex = $('input[name="user_info_sex"]:checked').val();
-        console.log(check_sex);
     });
 
     // user 나이 선택 시, 값 변경
     $('#user_info_age').on('change', function () {
         var check_user_info_age = $('#user_info_age option:selected').val();
-        console.log(check_user_info_age);
     });
 
     // user 직업 선택 시, 값 변경
     $('#user_info_job').on('change', function () {
         var check_user_info_job = $('#user_info_job option:selected').val();
-        console.log(check_user_info_job);
+    });
+
+    //model 선택
+    $('resetThemeConfig').on("click", function (e) {
+        var check_model = $('input[name="model_select"]:checked').val();
     });
 });
