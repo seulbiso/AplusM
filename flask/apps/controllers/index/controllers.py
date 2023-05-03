@@ -27,4 +27,3 @@ def set_session_number():
 
 def session_clear():
     session.clear()
-

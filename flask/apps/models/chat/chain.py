@@ -3,6 +3,12 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
 from config import ModelConfig
 import jsonpickle
+import json
+
+from langchain import SerpAPIWrapper, LLMChain
+from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
+
+from apps.database.pubsub import PubsubChatLog
 
 
 class SimpleChat:
@@ -11,7 +17,7 @@ class SimpleChat:
     '''
 
     def __init__(self, prompt):
-        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
+        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.7)
         self.prompt = prompt
         self.chatgpt_chain = ConversationChain(
             llm = self.llm, 
@@ -27,7 +33,7 @@ class SimpleChat:
         Returns:
             - output(string): GPT 모델의 답변
         '''
-
+        PubsubChatLog.publish('답변을 생성하고 있습니다.')
         output = self.chatgpt_chain.predict(input=input)
 
         return output
@@ -38,18 +44,36 @@ class SimpleChat:
     
 class BrowseChat:
     '''
-    ********** 수정 예정 ************
+    SimpleChat에 Google Search API를 연결해 Browsing 기능이 적용된 Conversation Chain을 생성한다.
     '''
 
     def __init__(self, prompt):
-        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
-        self.prompt = prompt
-        self.chatgpt_chain = ConversationChain(
-            llm = self.llm, 
-            prompt = self.prompt,
-            verbose = True, 
-            memory = ConversationBufferMemory(return_messages=True)
-        )
+
+        # Tool 생성
+        self.params ={
+            "engine": "google",
+            "hl": "ko",
+            "gl": "kr"
+        }
+        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.7)
+        self.search = SerpAPIWrapper(params=self.params, serpapi_api_key = ModelConfig.SERP.API_KEY)
+        self.tools = [
+            Tool(
+                name = "Search",
+                func= self.search.run,
+                description="useful for when you need to answer questions about current events"
+            )
+        ]
+        
+        self.memory = ConversationBufferMemory(memory_key="history", input_key='input', output_key="output")
+
+        # Agent 생성
+        self.llm_chain = LLMChain(llm=self.llm, prompt=prompt)
+        self.agent = ZeroShotAgent(llm_chain=self.llm_chain, tools=self.tools, verbose=True)
+
+        # Chain 생성 = Agent + Tools + Memory
+        self.agent_chain = AgentExecutor.from_agent_and_tools(agent=self.agent, tools=self.tools, verbose=True, memory=self.memory, return_intermediate_steps=True)
+
 
     def chain(self, input):
         '''
@@ -58,9 +82,16 @@ class BrowseChat:
         Returns:
             - output(string): GPT 모델의 답변
         '''
-
-        output = self.chatgpt_chain.predict(input=input)
-
+        
+        PubsubChatLog.publish('답변을 생성하고 있습니다.')
+        response =  self.agent_chain({"input":input})
+        output = response['output']
+        steps = json.dumps(response["intermediate_steps"], indent=2, ensure_ascii=False)
+        # output = self.agent_chain.run({"input":input})
+        # for thts in steps:
+        #     for obs in thts:
+        #         print(obs[-1])
+        # return output, steps
         return output
 
     def to_json(self):
@@ -90,11 +121,11 @@ class DocsChat:
             - output(string): GPT 모델의 답변
         '''
 
+        # PubsubChatLog.publish('답변을 생성하고 있습니다.')
         output = self.chatgpt_chain.predict(input=input)
 
         return output
 
     def to_json(self):
         return jsonpickle.encode(self)
-    
 

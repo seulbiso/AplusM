@@ -6,7 +6,7 @@ import jsonpickle, json
 from apps.models.prompt.preprocess import Prompt
 from apps.models.chat.service import *
 
-from apps.database.publish import PubsubChatLog
+from apps.database.pubsub import PubsubChatLog
 from apps.database.session import cache
 from apps.database.models import history_head
 
@@ -22,10 +22,13 @@ def chat():
     if request.method == 'POST':
 
         # Get user input from form data
+        mode = 'mode_default'
         input = request.form['chat_Q']
         persona = request.form['persona']
         user_info = json.loads(request.form['user_info'])
         mode = request.form['mode']
+
+        print(mode)
         
 
         # Check if SimpleChat instance exists in session

@@ -104,6 +104,8 @@ class FlaskConfig:
 class ModelConfig:
     class GPT :
         API_KEY = JsonConfig.get_data_model('GPT').get("API_KEY")
+    class SERP :
+        API_KEY = JsonConfig.get_data_model('SERP').get("API_KEY")
  
 
 class ProductionConfig(FlaskConfig):
