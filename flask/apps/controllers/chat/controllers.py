@@ -59,6 +59,11 @@ def chat():
 #     rows = history_head.query.all()
 #     print("rows ", rows)
 
+def yield_lines(sentence):
+    lines = sentence.split('\n')
+    for line in lines:
+        yield line
+
 def event_stream(channel):
     pubsub = cache.pubsub()
     pubsub.subscribe(channel)
@@ -66,9 +71,12 @@ def event_stream(channel):
     # TODO: handle client disconnection.
     for message in pubsub.listen():
         if message['type']=='message':
-            data = 'data: %s\n\n' % message['data'].decode('utf-8')
-            print ("message in pubsub.listen()" , data)
-            yield data
+            
+            lines = message['data'].decode('utf-8').split('\n')
+            for line in lines:
+                yield'data: %s\n\n' % line
+                
+            
 
 
 @app.route('/stream')
