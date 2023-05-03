@@ -16,7 +16,7 @@ $(document).ready(() => {
             $.ajax({
                 url: "/chat",
                 type: "POST",
-                //user 정보, Persona 정보, 메시지 값
+                //user 정보, Persona 정보, 메시지, MODE 선택 값
                 data: { chat_Q: message,
                         user_info: JSON.stringify(user_info),
                         persona: check_persona,
