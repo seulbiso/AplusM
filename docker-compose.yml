@@ -9,9 +9,11 @@ services:
       - redis
     environment:
       - APP_NAME=FlaskAPP
+      - PYTHONUNBUFFERED=1
     ports:
       - "5000:5000"
-    command: gunicorn -b 0.0.0.0:5000 app:app
+    #command: gunicorn -b 0.0.0.0:5000 app:app
+    command: gunicorn -b 0.0.0.0:5000 -w 2 -t 240 app:app --preload
   nginx:
     build: ./nginx
     container_name: nginx
