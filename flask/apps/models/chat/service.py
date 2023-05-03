@@ -15,7 +15,8 @@ class Chain:
     def chat(self, persona, user_info):
         self.persona = persona
         self.user_info = user_info
-
+        conversation_chain = None
+        
         if self.mode == "mode_default":
             prompt = Prompt().write_prompt(persona, user_info)
             conversation_chain = SimpleChat(prompt)
@@ -37,7 +38,7 @@ class Chain:
 
 class ChatService(Chain):
 
-    def __init__(self, mode="default", persona=None, user_info=None):
+    def __init__(self, mode="mode_default", persona=None, user_info=None):
         super().__init__(mode)
         self.conversation_chain = self.chat(persona, user_info)
         
@@ -49,7 +50,6 @@ class ChatService(Chain):
 
         # Predict
         output = self.conversation_chain.chain(chat_Q)
-        # output, steps = self.conversation_chain.chain(chat_Q)
         PubsubChatLog.publish('답변이 생성되었습니다.')
 
         # DB Save
@@ -66,7 +66,7 @@ class ChatService(Chain):
         '''
         DB SAVE 추가
         '''
-        print("test")
+        # print("test")
         # return res
     
     def to_json(self):

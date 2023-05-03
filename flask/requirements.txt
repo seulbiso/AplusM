@@ -18,7 +18,7 @@ idna==3.4
 itsdangerous==2.1.2
 Jinja2==3.1.2
 jsonpickle==3.0.1
-langchain==0.0.147
+langchain==0.0.157
 linecache2==1.0.0
 MarkupSafe==2.1.2
 marshmallow==3.19.0
