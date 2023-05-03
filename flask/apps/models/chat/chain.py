@@ -8,7 +8,7 @@ import json
 from langchain import SerpAPIWrapper, LLMChain
 from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
 
-# from apps.database.pubsub import PubsubChatLog
+from apps.database.pubsub import PubsubChatLog
 
 
 class SimpleChat:
@@ -33,7 +33,7 @@ class SimpleChat:
         Returns:
             - output(string): GPT 모델의 답변
         '''
-        # PubsubChatLog.publish('답변을 생성하고 있습니다.')
+        PubsubChatLog.publish('답변을 생성하고 있습니다.')
         output = self.chatgpt_chain.predict(input=input)
 
         return output
@@ -83,7 +83,7 @@ class BrowseChat:
             - output(string): GPT 모델의 답변
         '''
         
-        # PubsubChatLog.publish('답변을 생성하고 있습니다.')
+        PubsubChatLog.publish('답변을 생성하고 있습니다.')
         response =  self.agent_chain({"input":input})
         output = response['output']
         steps = json.dumps(response["intermediate_steps"], indent=2, ensure_ascii=False)

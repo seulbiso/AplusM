@@ -3,7 +3,7 @@ from langchain import PromptTemplate, SerpAPIWrapper
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.agents import ZeroShotAgent, Tool
 from config import ModelConfig
-# from apps.database.pubsub import PubsubChatLog
+from apps.database.pubsub import PubsubChatLog
 
 class Preprocess:
     '''
@@ -83,7 +83,7 @@ class Prompt(Preprocess):
             - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
         '''
 
-        # PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
+        PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
 
         input_variables = ["history"]
 
@@ -98,7 +98,8 @@ class Prompt(Preprocess):
                 ])
         
         log = self.instruction + self.persona(persona=persona)
-        # PubsubChatLog.publish(f'프롬프트가 생성되었습니다.\n\n{log}')
+        PubsubChatLog.publish('프롬프트가 생성되었습니다.')
+        PubsubChatLog.publish(log)
 
         return prompt
     
@@ -133,7 +134,7 @@ class BrowsePrompt(Preprocess):
             - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
         '''
 
-        # PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
+        PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
 
         input_variables = ["history", "input", "agent_scratchpad"]
 
@@ -146,5 +147,7 @@ class BrowsePrompt(Preprocess):
         
         log = self.instruction + self.persona(persona=persona)
         # PubsubChatLog.publish(f'프롬프트가 생성되었습니다.\n\n{log}')
+        PubsubChatLog.publish('프롬프트가 생성되었습니다.')
+        PubsubChatLog.publish(log)
 
         return chat_prompt
