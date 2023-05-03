@@ -10,7 +10,7 @@ $(document).ready(() => {
         var check_user_info_job = $('#user_info_job option:selected').val();
         var check_user_info_hobby = $('#user_info_hobby').val();
         var user_info = {"user_info_name":check_user_info_name,"user_info_age": check_user_info_age, "user_info_sex":check_sex,"user_info_job": check_user_info_job,"user_info_hobby": check_user_info_hobby};
-        var check_model = $('input[name="model_select"]:checked').val();
+        var check_mode = $('input[name="mode_select"]:checked').val();
         
         if (message.trim() !== "") {
             $.ajax({
@@ -20,7 +20,7 @@ $(document).ready(() => {
                 data: { chat_Q: message,
                         user_info: JSON.stringify(user_info),
                         persona: check_persona,
-                        check_model : check_model
+                        mode : check_mode
                 },
                 success: function (data) {
                     
@@ -126,6 +126,6 @@ $(document).ready(() => {
 
     //model 선택
     $('resetThemeConfig').on("click", function (e) {
-        var check_model = $('input[name="model_select"]:checked').val();
+        var check_mode = $('input[name="mode_select"]:checked').val();
     });
 });
