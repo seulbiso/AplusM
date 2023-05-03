@@ -2,6 +2,7 @@ from apps.models.chat.chain import SimpleChat, BrowseChat, DocsChat
 from apps.models.chat.history import SaveHistory
 import jsonpickle
 from apps.models.prompt.preprocess import *
+# from apps.database.pubsub import PubsubChatLog
 
 
 class Chain:
@@ -18,17 +19,14 @@ class Chain:
         if self.mode == "default":
             prompt = Prompt().write_prompt(persona, user_info)
             conversation_chain = SimpleChat(prompt)
-            ### log: GPT 검색 중입니다.
 
         elif self.mode == "browsing":
             prompt = BrowsePrompt().write_prompt(persona, user_info)
             conversation_chain = BrowseChat(prompt)
-            ### log: Google 검색 중입니다.
 
         elif self.mode == "docs":
             prompt = Prompt().write_prompt(persona, user_info) # 수정 필요
             conversation_chain = DocsChat(prompt)
-            ### log: 문서를 읽어오는 중입니다.
 
         return conversation_chain
 
@@ -50,6 +48,8 @@ class ChatService(Chain):
 
         # Predict
         output = self.conversation_chain.chain(chat_Q)
+        # output, steps = self.conversation_chain.chain(chat_Q)
+        # PubsubChatLog.publish('답변이 생성되었습니다.')
 
         # DB Save
         record = self.save(self.conversation_chain,
@@ -61,12 +61,12 @@ class ChatService(Chain):
 
 
     def save(self, *params):
-        res = SaveHistory(*params).get_record()
+        # res = SaveHistory(*params).get_record()
         '''
         DB SAVE 추가
         '''
-        # print(res)
-        return res
+        print("test")
+        # return res
     
     def to_json(self):
         return jsonpickle.encode(self)

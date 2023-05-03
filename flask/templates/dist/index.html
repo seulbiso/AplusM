@@ -23,6 +23,7 @@
     </noscript>
     <!-- chat.js -->
     <script type="text/javascript" src="./static/assets/js/chat.js"></script>
+    <script type="text/javascript" src="./static/assets/js/chatlog.js"></script>
 
     <script>
         // Theme switcher
@@ -415,7 +416,7 @@
                                     <td class="text-truncate fw-bold position-relative">
                                         <input class="form-check-input" type="radio" name="flexRadioDefault"
                                             id="flexRadioDefault3" checked>
-                                        <label class="form-check-label" for="flexRadioDefault3">
+                                        <label class="form-check-label-model" for="flexRadioDefault3">
                                             Simple Chat
                                         </label>
                                     </td>
@@ -424,7 +425,7 @@
                                     <td class="text-truncate fw-bold position-relative">
                                         <input class="form-check-input" type="radio" name="flexRadioDefault"
                                             id="flexRadioDefault3">
-                                        <label class="form-check-label" for="flexRadioDefault3">
+                                        <label class="form-check-label-model" for="flexRadioDefault3">
                                             Google Chat
                                         </label>
                                     </td>
@@ -433,7 +434,7 @@
                                     <td class="text-truncate fw-bold position-relative">
                                         <input class="form-check-input" type="radio" name="flexRadioDefault"
                                             id="flexRadioDefault3">
-                                        <label class="form-check-label" for="flexRadioDefault3">
+                                        <label class="form-check-label-model" for="flexRadioDefault3">
                                             File Chat
                                         </label>
                                     </td>
@@ -510,7 +511,25 @@
         </header>
 
         <div class="container-fluid d-flex flex-column flex-md-grow-1">
-        
+
+            <!-- Chat Log 보기 -->
+            <h1 class="h2 d-flex justify-content-between">
+                Chat Log Information
+            </h1>
+
+            <div class="row flex-md-grow-1">
+                <div class="col d-flex min-h-200px">
+                    <div class="card border-0 flex-grow-1">
+                        <div class="card-body py-0">
+                            <div class="position-relative h-100 min-vh-50 min-vh-lg-auto">
+                                <pre class="overflow-auto position-absolute w-100 h-100 pe-3 scroll-shadow" id="chat_log" style="overflow-y: auto; display: flex; flex-direction: column-reverse;">
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Title -->
             <h1 class="h2 d-flex justify-content-between">
                 Chat

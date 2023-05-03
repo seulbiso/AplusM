@@ -2,10 +2,11 @@ from flask import Flask
 import logging
 import sys
 
+from config import Config
 from apps.common.register import BlueprintRegister
 from apps.common.response import error
 
-from config import Config
+
 
 
 app = Flask(__name__, template_folder=Config.TEMPLATES_DIR, static_folder=Config.STATIC_DIR)
@@ -13,7 +14,10 @@ app.secret_key ='abcedateateataeate'
 app.config.from_object(Config.from_app_mode())
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.INFO)
+
 BlueprintRegister(app=app, module_path='apps.controllers', controller_name='controllers').register()
+
+
 
 
 @app.errorhandler(403)

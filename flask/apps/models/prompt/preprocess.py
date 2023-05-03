@@ -3,6 +3,7 @@ from langchain import PromptTemplate, SerpAPIWrapper
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.agents import ZeroShotAgent, Tool
 from config import ModelConfig
+# from apps.database.pubsub import PubsubChatLog
 
 class Preprocess:
     '''
@@ -68,7 +69,6 @@ class Preprocess:
 class Prompt(Preprocess):
     '''
     기본 Prompt + History + Input = Prompt Template
-    Langchain에서 제공하는 Prompt Template 객체로 생성한다.
     '''
         
     def __init__(self):
@@ -83,6 +83,8 @@ class Prompt(Preprocess):
             - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
         '''
 
+        # PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
+
         input_variables = ["history"]
 
         chat_prompt = PromptTemplate(
@@ -95,7 +97,8 @@ class Prompt(Preprocess):
                 HumanMessagePromptTemplate.from_template("{input}")
                 ])
         
-        log = self.instruction + self.persona(persona=persona) + self.user_info(user_info=user_info)
+        log = self.instruction + self.persona(persona=persona)
+        # PubsubChatLog.publish(f'프롬프트가 생성되었습니다.\n\n{log}')
 
         return prompt
     
@@ -103,7 +106,6 @@ class Prompt(Preprocess):
 class BrowsePrompt(Preprocess):
     '''
     기본 Prompt + Agent + History + Input = Agent Prompt Template
-    Langchain에서 제공하는 Prompt Template 객체로 생성한다.
     '''
         
     def __init__(self):
@@ -131,6 +133,8 @@ class BrowsePrompt(Preprocess):
             - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
         '''
 
+        # PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
+
         input_variables = ["history", "input", "agent_scratchpad"]
 
         chat_prompt = ZeroShotAgent.create_prompt(
@@ -139,5 +143,8 @@ class BrowsePrompt(Preprocess):
                 suffix=self.user_info(user_info=user_info) +self.base + "{input}" + "{agent_scratchpad}", 
                 input_variables=input_variables
             )
+        
+        log = self.instruction + self.persona(persona=persona)
+        # PubsubChatLog.publish(f'프롬프트가 생성되었습니다.\n\n{log}')
 
         return chat_prompt
