@@ -3549,7 +3549,7 @@ a.fc-event:hover {
   --bs-black-rgb: 0, 0, 0;
   --bs-body-color-rgb: 14, 34, 56;
   --bs-body-bg-rgb: 248, 250, 251;
-  --bs-font-sans-serif: "Open Sans", sans-serif;
+  --bs-font-sans-serif: "Noto Sans KR", sans-serif;
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, hsla(0, 0%, 100%, .15), hsla(0, 0%, 100%, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
@@ -3646,7 +3646,7 @@ a.fc-event:hover {
 body {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  background-color: var(--bs-body-bg);
+  background-color: var(--bs-gray-300);
   color: var(--bs-body-color);
   font-family: var(--bs-body-font-family);
   font-size: var(--bs-body-font-size);
@@ -4267,7 +4267,7 @@ progress {
 }
 
 .row {
-  --bs-gutter-x: 1.875rem;
+  --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
   display: flex;
   flex-wrap: wrap;
@@ -6098,10 +6098,12 @@ progress {
 }
 
 .form-label {
-  font-size: .75rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 600;
   margin-bottom: .3125rem;
-  color:white
+  color:white;
+  padding-bottom: calc(.625rem + 1px);
+  padding-top: calc(.625rem + 1px)
 }
 
 .col-form-label {
@@ -6147,7 +6149,7 @@ progress {
   line-height: 1.5;
   padding: .625rem .75rem;
   transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-  width: 85%
+  width: 90%
 }
 
 @media(prefers-reduced-motion:reduce) {
@@ -6358,13 +6360,13 @@ textarea.form-control-lg {
   box-shadow: 0 0 transparent;
   color: var(--bs-body-color);
   display: block;
-  font-family: Open Sans, Segoe UI Emoji, Segoe UI Symbol, Segoe UI, Apple Color Emoji, Twemoji Mozilla, Noto Color Emoji, EmojiOne Color, Android Emoji, sans-serif, system-ui, -apple-system;
+  font-family: Noto Sans KR, Segoe UI Emoji, Segoe UI Symbol, Segoe UI, Apple Color Emoji, Twemoji Mozilla, Noto Color Emoji, EmojiOne Color, Android Emoji, sans-serif, system-ui, -apple-system;
   font-size: .75rem;
   font-weight: 400;
   line-height: 1.5;
   padding: .625rem 2.25rem .625rem .75rem;
   transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-  width: 85%
+  width: 90%
 }
 
 @media(prefers-reduced-motion:reduce) {
@@ -8456,6 +8458,7 @@ fieldset:disabled .btn {
 }
 
 .nav-link {
+  --bs-nav-link-font-size:  1.5rem;
   color: var(--bs-nav-link-color);
   display: block;
   font-size: var(--bs-nav-link-font-size);
@@ -9099,8 +9102,8 @@ fieldset:disabled .btn {
   display: flex;
   flex-direction: column;
   height: var(--bs-card-height);
-  min-width: 0;
-  position: relative
+  min-width: 300px;
+  position: relative;
 }
 
 .card>hr {
@@ -16562,8 +16565,8 @@ fieldset:disabled .btn {
 }
 
 .py-6 {
-  padding-bottom: 1.875rem !important;
-  padding-top: 1.875rem !important
+  padding-bottom: 1rem !important;
+  padding-top: 1rem !important
 }
 
 .py-7 {
@@ -36066,7 +36069,7 @@ button {
 }
 
 .form-check-label {
-  font-size: .75rem;
+  font-size: 1.15rem;
   font-weight: 600
 }
 
@@ -36176,7 +36179,7 @@ button {
 }
 
 main {
-  --bs-main-content-bg: var(--bs-light-green)
+  /* --bs-main-content-bg: #4b9cd354; */
 }
 
 .navbar-vertical~main {
@@ -36208,8 +36211,8 @@ main {
   .navbar-vertical~main .container-sm,
   .navbar-vertical~main .container-xl,
   .navbar-vertical~main .container-xxl {
-    padding-left: 2.8125rem !important;
-    padding-right: 2.8125rem !important
+    padding-left: 1rem !important;
+    padding-right: 1rem !important
   }
 }
 
@@ -37009,7 +37012,7 @@ main {
   border-top-right-radius: 1.875rem;
   display: flex;
   font-weight: 600;
-  margin-right: 1.875rem;
+  margin-right: 0.6rem;
   padding-right: 1.25rem
 }
 

@@ -4,13 +4,13 @@ $(document).ready(() => {
         e.preventDefault();
         var message = $("#message").val();
         var check_user_info_name = $('#user_info_name').val();
-        var check_sex = $('input[name="user_info_sex"]:checked').val();
+        var check_sex = $('#user_info_sex option:selected').val();
         var check_persona = $('input[name="persona_choice"]:checked').val();
         var check_user_info_age = $('#user_info_age option:selected').val();
         var check_user_info_job = $('#user_info_job option:selected').val();
         var check_user_info_hobby = $('#user_info_hobby').val();
         var user_info = {"user_info_name":check_user_info_name,"user_info_age": check_user_info_age, "user_info_sex":check_sex,"user_info_job": check_user_info_job,"user_info_hobby": check_user_info_hobby};
-        var check_mode = $('input[name="mode_select"]:checked').val();
+        var check_mode =  $('#mode option:selected').val();
         
         if (message.trim() !== "") {
             $.ajax({
@@ -31,9 +31,10 @@ $(document).ready(() => {
                     $('#chat_Q').prepend(
                         '<div class="d-flex mb-6 ' + messageContainerClass + '">'
                         + '<div class="d-flex flex-column align-items-' + (isUserMessage ? 'end' : 'start') + '">'
-                        + '<div class="mb-1 p-4 rounded-end rounded-bottom bg-gray-300">'
+                        // + '<div class="mb-1 p-4 rounded-end rounded-bottom bg-gray-300">'
+                        + '<pre class="mb-1 p-4 rounded-end rounded-bottom bg-gray-300" style="white-space: pre-wrap">'
                         + data.chat_A // display the chatbot's message received from the server
-                        + '</div>'
+                        + '</pre>'
                         + '</div>'
                         + '<div>'
                         + '</div>'
@@ -94,12 +95,12 @@ $(document).ready(() => {
     });
 
     // 화면 리셋 버튼
-    $('resetThemeConfig').on("click", function (e) {
-        $.ajax({
-            url: "/",
-            type: "GET"
-        });
-    });
+    // $('resetThemeConfig').on("click", function (e) {
+    //     $.ajax({
+    //         url: "/",
+    //         type: "GET"
+    //     });
+    // });
 
     // 페르소나 Default 값 설정
     $('#persona_one').prop("checked", true);
@@ -110,8 +111,8 @@ $(document).ready(() => {
     });
 
     // user 성별 선택 시, 값 변경
-    $('input[type="radio"]').on('change', function () {
-        var check_sex = $('input[name="user_info_sex"]:checked').val();
+    $('#user_info_sex').on('change', function () {
+        var check_sex = $('#user_info_sex option:selected').val();
     });
 
     // user 나이 선택 시, 값 변경
@@ -124,8 +125,8 @@ $(document).ready(() => {
         var check_user_info_job = $('#user_info_job option:selected').val();
     });
 
-    //model 선택
-    $('resetThemeConfig').on("click", function (e) {
-        var check_mode = $('input[name="mode_select"]:checked').val();
+    // //model 선택
+    $('#mode').on('change', function () {
+        var check_mode = $('#mode option:selected').val();
     });
 });
