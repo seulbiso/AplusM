@@ -27,10 +27,7 @@ def chat():
         persona = request.form['persona']
         user_info = json.loads(request.form['user_info'])
         mode = request.form['mode']
-
-        print(mode)
-        
-
+    
         # Check if SimpleChat instance exists in session
         if 'chat' not in session:
             # Create a new SimpleChat instance and store it in session
@@ -67,7 +64,7 @@ def yield_lines(sentence):
 def event_stream(channel):
     pubsub = cache.pubsub()
     pubsub.subscribe(channel)
-    # current_app.logger.info("RUN event_stream %s" %(channel))
+
     # TODO: handle client disconnection.
     for message in pubsub.listen():
         if message['type']=='message':
@@ -75,8 +72,6 @@ def event_stream(channel):
             lines = message['data'].decode('utf-8').split('\n')
             for line in lines:
                 yield'data: %s\n\n' % line
-                
-            
 
 
 @app.route('/stream')
