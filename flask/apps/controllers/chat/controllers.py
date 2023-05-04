@@ -22,7 +22,7 @@ def chat():
     if request.method == 'POST':
 
         # Get user input from form data
-        mode = 'mode_browsing'
+        mode = 'mode_default'
         input = request.form['chat_Q']
         persona = request.form['persona']
         user_info = json.loads(request.form['user_info'])
@@ -39,11 +39,11 @@ def chat():
             # Retrieve SimpleChat instance from session
             chat = jsonpickle.decode(session['chat'])     
 
-        PubsubChatLog.publish('답변 생성 ing...........')
+        # PubsubChatLog.publish('답변 생성 ing...........')
         # output = simple_chat.chain(input)   
         output = chat.predict(input)
 
-        PubsubChatLog.publish('답변 생성 완료 %s'%(output))
+        # PubsubChatLog.publish('답변 생성 완료 %s'%(output))
     
         session['chat'] = chat.to_json()
 

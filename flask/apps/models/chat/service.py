@@ -47,10 +47,13 @@ class ChatService(Chain):
 
         # Set conversation_number
         self.number += 1
-
+        output = "  "
         # Predict
-        output = self.conversation_chain.chain(chat_Q)
-        PubsubChatLog.publish('답변이 생성되었습니다.')
+        try:
+            output = self.conversation_chain.chain(chat_Q)
+            PubsubChatLog.publish('답변 생성 완료!')
+        except Exception as e:
+            PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
 
         # DB Save
         record = self.save(self.conversation_chain,
