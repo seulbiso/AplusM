@@ -4,6 +4,9 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 from langchain.agents import ZeroShotAgent, Tool
 from config import ModelConfig
 from apps.database.pubsub import PubsubChatLog
+import os
+from langchain.output_parsers import PydanticOutputParser, OutputFixingParser, RetryOutputParser
+from pydantic import BaseModel, Field, validators
 
 class Preprocess:
     '''
@@ -11,24 +14,24 @@ class Preprocess:
     '''
 
     def __init__(self):
-        self.base = '''\nCurrent conversation:\n{history}\n'''
         self.template = self.load_template()
-        self.instruction = self.template["instruction"]
 
-    def persona(self, persona:str="친절한 상담원"):
+    def persona(self, mode = 'mode_default', persona:str="친절한 상담원"):
         '''
         Args:
             - persona(string): 사용자가 입력한 persona 정보
         Returns:
             - __(string) persona 정보가 담긴 prompt
         '''
-        res = self.template["persona"]["default"]
+        tplt = self.template["default"]
+        if mode == "mode_browse":
+            tplt = self.template["browse"]
 
+        res = tplt["persona"]["default"]
         if persona == "시니컬한 고양이":
-            res = self.template["persona"]["cat"]
+            res = tplt["persona"]["cat"]
         elif persona == "지혜로운 노인":
-            res = self.template["persona"]["elder"]
-        else: res = res
+            res = tplt["persona"]["elder"]
 
         return res
     
@@ -59,8 +62,7 @@ class Preprocess:
             res =yaml.load(f, Loader=yaml.FullLoader)
         return res
 
-    def load_template(self):
-        dir = "apps/models/prompt/prompt_template.yaml"
+    def load_template(self, dir = "apps/models/prompt/prompt_template.yaml"):
         tmpl = self.load_yaml(dir)
         return tmpl
     
@@ -73,6 +75,7 @@ class Prompt(Preprocess):
         
     def __init__(self):
         super().__init__()
+        self.tplt = self.template["default"]
 
     def write_prompt(self, persona:str, user_info:dict):
         '''
@@ -84,13 +87,13 @@ class Prompt(Preprocess):
         '''
 
         # LOGGING
-        PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
+        PubsubChatLog.publish('프롬프트 생성 ing...........')
 
         input_variables = ["history"]
 
         chat_prompt = PromptTemplate(
             input_variables = input_variables,
-            template = self.instruction + self.persona(persona=persona) + self.user_info(user_info=user_info) + self.base
+            template = self.tplt["instruction"] + self.persona(mode = "mode_default", persona=persona) + self.user_info(user_info=user_info) + self.tplt["base"]
             )
         
         prompt = ChatPromptTemplate.from_messages([
@@ -99,12 +102,15 @@ class Prompt(Preprocess):
                 ])
 
         # LOGGING
-        log = self.instruction + self.persona(persona=persona)
-        PubsubChatLog.publish('프롬프트가 생성되었습니다.')
+        log =  self.tplt["instruction"] + self.persona(mode = "mode_default", persona=persona)
+        PubsubChatLog.publish('프롬프트 생성 완료!')
         PubsubChatLog.publish(log)
 
         return prompt
-    
+
+# class Action(BaseModel):
+#     action: str = Field(description="action to take")
+#     action_input: str = Field(description="input to the action")
 
 class BrowsePrompt(Preprocess):
     '''
@@ -113,6 +119,7 @@ class BrowsePrompt(Preprocess):
         
     def __init__(self):
         super().__init__()
+        self.tplt = self.template["browse"]
         self.params ={
             "engine": "google",
             "hl": "ko",
@@ -137,20 +144,20 @@ class BrowsePrompt(Preprocess):
         '''
 
         # LOGGING
-        PubsubChatLog.publish('프롬프트를 생성하고 있습니다.')
+        PubsubChatLog.publish('프롬프트 생성 ing...........')
 
         input_variables = ["history", "input", "agent_scratchpad"]
-
+        # parser = PydanticOutputParser(pydantic_object=Action)
         chat_prompt = ZeroShotAgent.create_prompt(
                 self.tools, 
-                prefix=self.instruction + self.persona(persona=persona),
-                suffix=self.user_info(user_info=user_info) +self.base + "{input}" + "{agent_scratchpad}", 
+                prefix=self.tplt["prefix"],
+                suffix = self.tplt["suffix"] + self.persona(mode = "mode_browse", persona=persona) + self.user_info(user_info=user_info) + self.tplt["base"],
                 input_variables=input_variables
             )
         
         # LOGGING
-        log = self.instruction + self.persona(persona=persona)
-        PubsubChatLog.publish('프롬프트가 생성되었습니다.')
+        log = self.tplt["prefix"] + self.persona(mode = "mode_browse", persona=persona)
+        PubsubChatLog.publish('프롬프트 생성 완료!')
         PubsubChatLog.publish(log)
 
         return chat_prompt
