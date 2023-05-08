@@ -22,7 +22,8 @@ def set_session_number():
     session number 세팅
     '''
     cache.incr(name='session_number_lastest')
-    session['session_number'] = int(cache.get("session_number_lastest").decode('utf-8'))
+    #session['session_number'] = int(cache.get("session_number_lastest").decode('utf-8'))
+    session['session_number'] = cache.get("session_number_lastest")
     current_app.logger.info('CHECK VALUE session_number : %s', session['session_number'])
 
 def session_clear():
