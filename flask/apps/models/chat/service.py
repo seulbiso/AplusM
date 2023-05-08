@@ -55,6 +55,9 @@ class ChatService(Chain):
         except Exception as e:
             PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
 
+        # output = self.conversation_chain.chain(chat_Q)
+        # PubsubChatLog.publish('답변 생성 완료!')
+
         # DB Save
         record = self.save(self.conversation_chain,
                            self.number,

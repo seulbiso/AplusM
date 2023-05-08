@@ -49,14 +49,8 @@ class Preprocess:
         job = user_info["user_info_job"]
         hobby = user_info["user_info_hobby"]
 
-        return f'''(Questioner's Information)
-        Name: {name}
-        Age Group: {age}
-        Sex: {sex}
-        Job: {job}
-        Hobby: {hobby}
-
-        '''
+        return f'''(Questioner's Information) Name: {name}, Age Group: {age}, Sex: {sex}, Job: {job}, Hobby: {hobby}'''
+    
     def load_yaml(self, dir):
         with open(dir, encoding='utf8') as f:
             res =yaml.load(f, Loader=yaml.FullLoader)
@@ -156,7 +150,7 @@ class BrowsePrompt(Preprocess):
             )
         
         # LOGGING
-        log = self.tplt["prefix"] + self.persona(mode = "mode_browse", persona=persona)
+        log = self.tplt["prefix"] + self.tplt["suffix"] + self.persona(mode = "mode_browse", persona=persona) + self.tplt["base"]
         PubsubChatLog.publish('프롬프트 생성 완료!')
         PubsubChatLog.publish(log)
 

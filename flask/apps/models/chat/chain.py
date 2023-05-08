@@ -75,8 +75,9 @@ class BrowseChat:
         self.llm_chain = LLMChain(llm=self.llm, prompt=prompt)
         self.agent = ZeroShotAgent(llm_chain=self.llm_chain, tools=self.tools, verbose=True)
 
+
         # Chain 생성 = Agent + Tools + Memory
-        self.agent_chain = AgentExecutor.from_agent_and_tools(agent=self.agent, tools=self.tools, verbose=True, memory=self.memory, return_intermediate_steps=True, handle_parsing_errors=True)
+        self.agent_chain = AgentExecutor.from_agent_and_tools(agent=self.agent, tools=self.tools, verbose=True, memory=self.memory, return_intermediate_steps=True)
 
 
     def chain(self, input):
@@ -87,6 +88,14 @@ class BrowseChat:
             - output(string): GPT 모델의 답변
         '''
         output = "  "
+
+        self.agent_chain.tools = [
+            Tool(
+                name = "Search",
+                func= self.search.run,
+                description="useful for when you need to answer questions about current events"
+            )
+        ]
 
         # LOGGING
         PubsubChatLog.publish('답변 생성 ing...........')
@@ -139,77 +148,3 @@ class DocsChat:
 
     def to_json(self):
         return jsonpickle.encode(self)
-    
-# class Action(BaseModel):
-#     action: str = Field(description="action to take")
-#     action_input: str = Field(description="input to the action")
-
-# class BrowseChat:
-#     '''
-#     SimpleChat에 Google Search API를 연결해 Browsing 기능이 적용된 Conversation Chain을 생성한다.
-#     '''
-
-#     def __init__(self, prompt):
-
-#         # Tool 생성
-#         self.params ={
-#             "engine": "google",
-#             "hl": "ko",
-#             "gl": "kr"
-#         }
-#         self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
-#         self.search = SerpAPIWrapper(params=self.params, serpapi_api_key = ModelConfig.SERP.API_KEY)
-#         self.tools = [
-#             Tool(
-#                 name = "Search",
-#                 func= self.search.run,
-#                 description="useful for when you need to answer questions about current events"
-#             )
-#         ]
-        
-#         self.memory = ConversationBufferMemory(memory_key="history", input_key='input', output_key="output")
-
-#         # Agent 생성
-#         self.llm_chain = LLMChain(llm=self.llm, prompt=prompt)
-#         self.agent = ZeroShotAgent(llm_chain=self.llm_chain, tools=self.tools, verbose=True)
-
-#         # Chain 생성 = Agent + Tools + Memory
-#         self.agent_chain = AgentExecutor.from_agent_and_tools(agent=self.agent, tools=self.tools, verbose=True, memory=self.memory, return_intermediate_steps=True, handle_parsing_errors=True)
-
-#         self.prompt = prompt
-
-#     def chain(self, input):
-#         '''
-#         Args:
-#             - input(string): 사용자가 입력한 질문
-#         Returns:
-#             - output(string): GPT 모델의 답변
-#         '''
-#         output = "  "
-
-#         # LOGGING
-#         PubsubChatLog.publish('답변 생성 ing...........')
-
-#         try:
-#             response = self.agent_chain({"input":input})
-#             steps = json.loads(json.dumps(response["intermediate_steps"], indent=2, ensure_ascii=False))
-
-#             # LOGGING
-#             for i, step in enumerate(steps):
-#                 if i == 0:
-#                     PubsubChatLog.publish(step[0][-1])
-#                 else: 
-#                     PubsubChatLog.publish(f"Thought: {step[0][-1]}")
-#                 PubsubChatLog.publish(f"Observation: {step[-1]}")
-#         except:
-#             parser = PydanticOutputParser(pydantic_object=Action)
-#             prompt_value = self.prompt.format_prompt(input=input)
-#             retry_parser = RetryWithErrorOutputParser.from_llm(parser=parser, llm=self.llm)
-#             retry_parser.parse_with_prompt(self.agent_chain({"input":input}), prompt_value)
-
-#         output = response['output']
-
-#         return output
-
-#     def to_json(self):
-#         return jsonpickle.encode(self)

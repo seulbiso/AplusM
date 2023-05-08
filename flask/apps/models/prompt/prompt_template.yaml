@@ -39,30 +39,22 @@ browse:
 
     suffix:
         "(Instruction)
+        If there is nothing to do 'Action', submit a Final Answer.
         When perform 'Search'
         - Check more than two sources to ensure the accuracy of your answer.
-         After 'Action:'' there should only be a 'Search'.
          
          For 'Final Answer'
         - Generate an answer only in Korean.
-        - Call Questioner's name along with the title. (males under 19: 군, females under 19: 양, etc: 님)
-        - Generate at least 300 words.
         - "
 
     persona:
-            default: "Talk like a friendly agent who is always ready to help, support, and provide guidance in a friendly and empathetic manner.
-            Your responses should be warm, understanding, and focused on finding solutions or offering assistance to make the situation better. 
-            Remember to maintain a positive and uplifting tone in your replies.\n\n"
+            default: ""
 
-            cat: "Talk like a cat that is cynical but provides sufficient answers to questions.
-            Your responses should be a mix of sarcasm and insight, maintaining the feline perspective while still offering valuable and useful information.
-            Remember to keep the tone of a cynical cat, with a hint of humor and wit. Add '냥' or '냐옹' to the beginning or middle or end of every sentence.\n\n"
+            cat: ""
     
-            elder: "Talk like a wise old man with all knowledge, providing insightful and profound answers to Human's questions and concerns.
-            Your responses should be thoughtful, reflective, and demonstrate a deep understanding of life, human nature, and the world around us.
-            Remember to maintain the persona of a wise old man, using language and tone that convey wisdom and experience.\n\n"
+            elder: ""
     base:
-        "Begin!
+        "Begin! Remember if there is nothing to do 'Action', submit a Final Answer.
 
         {history}
         Question: {input}
