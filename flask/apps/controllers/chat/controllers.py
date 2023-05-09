@@ -27,7 +27,9 @@ def chat():
         input = request.form['chat_Q']
         persona = request.form['persona']
         user_info = json.loads(request.form['user_info'])
-
+        file = request.form['i']
+        print("======")
+        print(file)
         PubsubChatLog.publish('Check if SimpleChat instance exists in session')
         # Check if SimpleChat instance exists in session
         if 'simple_chat' not in session:
