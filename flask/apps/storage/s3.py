@@ -1,6 +1,8 @@
+from flask import current_app
 import boto3
 from config import Config
 import logging
+
 
 
 def s3_connection():
@@ -17,7 +19,7 @@ def s3_connection():
         )
 
     except Exception as e:
-        logging.exception(e)
+        current_app.logger.error(e)
         #exit(ERROR_S3_CONNECTION_FAILED)
     else :
         logging.info("S3 BUCKET CONNECTED!")
@@ -34,12 +36,14 @@ def s3_put_object(s3, bucket, file, path):
     :return: 성공 시 True, 실패 시 False 반환
     '''
     try:
+        current_app.logger.info(f"file.content_type : {file.content_type}")
+        current_app.logger.info(f"path : {path}")
         s3.put_object(Bucket=bucket, 
                       Body =file,
                       Key = path, 
                       ContentType = file.content_type)
     except Exception as e:
-        logging.exception(e)
+        current_app.logger.error(e)
         return False
     return True   
 
@@ -56,7 +60,7 @@ def s3_get_object(s3, bucket, object_name, file_name):
     try:
         s3.download_file(bucket, object_name, file_name)
     except Exception as e:
-        logging.exception(e)
+        current_app.logger.error(e)
         return False
     return True
 
@@ -72,7 +76,7 @@ def s3_list_objects(s3, bucket, prefix):
     try :
         obj_list = s3.list_objects(Bucket=bucket, Prefix=prefix)['Contents']
     except Exception as e:
-        logging.exception(e)
+        current_app.logger.error(e)
 
     return obj_list
 

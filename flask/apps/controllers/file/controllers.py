@@ -1,26 +1,34 @@
 from flask import Blueprint, request, jsonify, current_app, session
-import datetime
-from pytz import timezone
+import logging
 
 from config import Config
 from apps.common.response import *
 from apps.storage.s3 import *
+
+import pprint
 
 app = Blueprint('file', __name__, url_prefix='/file')
 
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    current_app.logger.info("POST /upload")
     s3 = s3_connection()
 
     file = request.files['file']
-    filename = file.filename.split('.')[0]
-    filepath = f"description/{filename}"
+    filename , filetype = file.filename.split('.')
+
+    timestamp = Config.get_current_time()
+    filepath = f"description/{filename}:{timestamp}.{filetype}"
+
+    pprint.pprint(file)
 
     if not s3_put_object(s3=s3,bucket=Config.BUCKET_NAME,file=file,path=filepath):
+        current_app.logger.error("FAIL S3 PUT OBJECT")
         return error(50000)
 
-    return ok
+    current_app.logger.info("SUCCESS S3 PUT OBJECT")
+    return ok()
 
 @app.route('/list', methods=['GET'])
 def list():

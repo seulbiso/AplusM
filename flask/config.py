@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+import datetime
+from pytz import timezone
 from redis import Redis
+
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA = json.loads(open('{}/config.json'.format(ROOT_DIR)).read())
@@ -102,6 +105,12 @@ class Config:
 
         return '{}://{}:{}@{}:{}/{}?charset=utf8'.format(dialect, Config.DB_USER_NAME, Config.DB_USER_PASSWD,
                                                       Config.DB_HOST, Config.DB_PORT, Config.DB_NAME)
+
+
+    @staticmethod
+    def get_current_time():
+        time_now = datetime.datetime.now(timezone('Asia/Seoul')).strftime("%Y%m%d%H%M%S")
+        return time_now
 
 
 
