@@ -85,8 +85,7 @@ class Config:
     AWS_SECRET_ACCESS_KEY = JsonConfig.get_data_db(STORAGE).get("AWS_SECRET_ACCESS_KEY",'AWS_SECRET_ACCESS_KEY')
     AWS_S3_BUCKET_REGION = JsonConfig.get_data_db(STORAGE).get("BUCKET_RESION",'BUCKET_RESION')
     BUCKET_NAME  = JsonConfig.get_data_db(STORAGE).get("BUCKET_NAME",'BUCKET_NAME')
-
-
+    BUCKET_FODLER = "description"
     
 
     @staticmethod
