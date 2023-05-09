@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import json
+from redis import Redis
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA = json.loads(open('{}/config.json'.format(ROOT_DIR)).read())
@@ -75,6 +76,16 @@ class Config:
     REDIS_HOST = JsonConfig.get_data_db(DBMS).get("REDIS_HOST",'localhost')
     REDIS_PORT = JsonConfig.get_data_db(DBMS).get("REDIS_PORT",'6379')
 
+    # S3 설정
+    STORAGE = "S3"
+    AWS_ACCESS_KEY = JsonConfig.get_data_db(STORAGE).get("AWS_ACCESS_KEY",'AWS_ACCESS_KEY')
+    AWS_SECRET_ACCESS_KEY = JsonConfig.get_data_db(STORAGE).get("AWS_SECRET_ACCESS_KEY",'AWS_SECRET_ACCESS_KEY')
+    AWS_S3_BUCKET_REGION = JsonConfig.get_data_db(STORAGE).get("BUCKET_RESION",'BUCKET_RESION')
+    BUCKET_NAME  = JsonConfig.get_data_db(STORAGE).get("BUCKET_NAME",'BUCKET_NAME')
+
+
+    
+
     @staticmethod
     def from_app_mode():
         mode = {
@@ -99,7 +110,11 @@ class FlaskConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = False
     TESTING = False
-
+    SESSION_TYPE = 'redis'
+    SESSION_PERMANENT = False
+    SESSION_USE_SIGNER = True
+    SESSION_REDIS = Redis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
+    
 
 class ModelConfig:
     class GPT :

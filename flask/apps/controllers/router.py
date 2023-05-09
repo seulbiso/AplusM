@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_session import Session
 import logging
 import sys
 
@@ -14,7 +15,7 @@ app.secret_key ='abcedateateataeate'
 app.config.from_object(Config.from_app_mode())
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.INFO)
-
+Session(app)
 BlueprintRegister(app=app, module_path='apps.controllers', controller_name='controllers').register()
 
 

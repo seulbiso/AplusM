@@ -1,6 +1,8 @@
-from flask import Blueprint, session, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, session
 import flask
 import jsonpickle, json
+
+import pprint
 
 
 from apps.models.prompt.preprocess import Prompt
@@ -40,9 +42,8 @@ def chat():
 
         output = chat.predict(input)  
 
-        # PubsubChatLog.publish('답변 생성 완료 %s'%(output))
-    
-        session['chat'] = chat.to_json()
+        chat_json = chat.to_json()
+        session['chat'] = chat_json
 
         response= {
             'chat_A' : output
@@ -56,10 +57,6 @@ def chat():
 #     rows = history_head.query.all()
 #     print("rows ", rows)
 
-def yield_lines(sentence):
-    lines = sentence.split('\n')
-    for line in lines:
-        yield line
 
 def event_stream(channel):
     pubsub = cache.pubsub()
