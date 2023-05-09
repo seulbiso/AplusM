@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app, session
 import logging
+import re
 
 from config import Config
 from apps.common.response import *
@@ -39,15 +40,20 @@ def list():
     prefix = 'description/'
     contents_list = s3_list_objects_key(s3, Config.BUCKET_NAME, prefix)
 
-    file_list = []    
+    file_dict = {}
+    expression = r"^(.+):(.+)\.(\w+)$"   
     for content in contents_list:
         if prefix in content:
-            file = content.split('/')[-1]
-            file_list.append(file)
+            #filename_full => filename:timestamp.filetype
+            #filename_notimestamp => filename
+            filename_full = content.split('/')[-1] 
+            filename,timestamp,filetype = re.findall(expression,filename_full)[0]
+            filename_notimestamp = f"{filename}.{filetype}"
+            file_dict[filename_full] = filename_notimestamp
             
     
     response = {
-        'file_list' : file_list
+        'file_list' : file_dict
     }
 
     return jsonify(response)
