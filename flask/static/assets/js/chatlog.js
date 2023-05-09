@@ -6,6 +6,7 @@ function sse() {
     source.onmessage = function(e) {
         // XSS in chat is fun (let's prevent that)
         out.textContent =  out.textContent + '\n' + e.data;
+        console.log(e.data);
     };
 }
 sse();

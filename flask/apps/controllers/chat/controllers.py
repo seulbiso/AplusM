@@ -1,12 +1,14 @@
-from flask import Blueprint, session, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, session
 import flask
 import jsonpickle, json
 
+import pprint
+
 
 from apps.models.prompt.preprocess import Prompt
-from apps.models.chat.chain import SimpleChat
+from apps.models.chat.service import *
 
-from apps.database.publish import PubsubChatLog
+from apps.database.pubsub import PubsubChatLog
 from apps.database.session import cache
 from apps.database.models import history_head
 
@@ -19,35 +21,29 @@ def chat():
     current_app.logger.info("POST /CHAT")
 
 
-    PubsubChatLog.publish('POST /CHAT ')
     if request.method == 'POST':
 
-        PubsubChatLog.publish('Get user input from form data')
         # Get user input from form data
+        mode = 'mode_default'
         input = request.form['chat_Q']
         persona = request.form['persona']
         user_info = json.loads(request.form['user_info'])
-        file = request.form['i']
-        print("======")
-        print(file)
-        PubsubChatLog.publish('Check if SimpleChat instance exists in session')
+        mode = request.form['mode']
+    
         # Check if SimpleChat instance exists in session
-        if 'simple_chat' not in session:
+        if 'chat' not in session:
             # Create a new SimpleChat instance and store it in session
-            prompt = Prompt().write_prompt(persona, user_info)
-            simple_chat = SimpleChat(prompt=prompt)
-            session['simple_chat'] = simple_chat.to_json()
+            chat = ChatService(mode, persona, user_info)
+            session['chat'] = chat.to_json()
 
         else:
-            PubsubChatLog.publish('Retrieve SimpleChat instance from session')
             # Retrieve SimpleChat instance from session
-            simple_chat = jsonpickle.decode(session['simple_chat'])     
+            chat = jsonpickle.decode(session['chat'])
 
-        output = simple_chat.chain(input)   
+        output = chat.predict(input)  
 
-        PubsubChatLog.publish('chat_A %s'%(output))
-    
-        session['simple_chat'] = simple_chat.to_json()
+        chat_json = chat.to_json()
+        session['chat'] = chat_json
 
         response= {
             'chat_A' : output
@@ -61,16 +57,18 @@ def chat():
 #     rows = history_head.query.all()
 #     print("rows ", rows)
 
+
 def event_stream(channel):
     pubsub = cache.pubsub()
     pubsub.subscribe(channel)
-    # current_app.logger.info("RUN event_stream %s" %(channel))
+
     # TODO: handle client disconnection.
     for message in pubsub.listen():
         if message['type']=='message':
-            data = 'data: %s\n\n' % message['data'].decode('utf-8')
-            print ("message in pubsub.listen()" , data)
-            yield data
+            
+            lines = message['data'].decode('utf-8').split('\n')
+            for line in lines:
+                yield'data: %s\n\n' % line
 
 
 @app.route('/stream')
