@@ -15,7 +15,7 @@ def upload():
     current_app.logger.info("POST /upload")
     s3 = s3_connection()
 
-    file = request.files['file']
+    file = request.files['file[0]']
     filename , filetype = file.filename.split('.')
 
     timestamp = Config.get_current_time()
