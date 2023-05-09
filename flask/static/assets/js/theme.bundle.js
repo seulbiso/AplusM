@@ -212,7 +212,7 @@
                         i.forEach((t => {
                             const n = {
                                 ...{
-                                    url: "http://3.39.25.15/file/upload",
+                                    url: "/file/upload",
                                     previewTemplate: '\n        <form class="form" enctype="multipart/form-data">\n            <div ' +
                                             'class="dz-preview dz-file-preview">\n                <div class="dz-details d-' +
                                             'flex mb-1">\n                    <img class="dz-image img-fluid" data-dz-thumb' +
