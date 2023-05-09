@@ -36,10 +36,18 @@ def upload():
 def list():
 
     s3 = s3_connection()
-    contents_list = s3_list_objects_key(s3, Config.BUCKET_NAME, '')
+    prefix = 'description/'
+    contents_list = s3_list_objects_key(s3, Config.BUCKET_NAME, prefix)
 
+    file_list = []    
+    for content in contents_list:
+        if prefix in content:
+            file = content.split('/')[-1]
+            file_list.append(file)
+            
+    
     response = {
-        'file_list' : contents_list
+        'file_list' : file_list
     }
 
     return jsonify(response)

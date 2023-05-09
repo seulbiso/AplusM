@@ -90,16 +90,18 @@ def s3_list_objects_key(s3, bucket, prefix):
     '''
     key_list = []
     obj_list = s3_list_objects(s3,bucket,prefix)
-    print("s3_list_objects")
-    print(obj_list)
+
     if obj_list is not None:
         for obj in obj_list:
             key = obj['Key']
             idx = key.rindex('/')
             # 파일 최종 경로가 prefix 거나, key 자체가 prefix 아닐때 저장
-            print("key[0:idx + 1]")
-            print(key[0:idx + 1])
-            key_list.append(key)
+            
+            current_app.logger.info("key[0:idx + 1]")
+            current_app.logger.info(key[0:idx + 1])
+            if key[0:idx + 1] != key:
+                key_list.append(key)
+            
     
 
     return key_list
