@@ -16,16 +16,16 @@ class Preprocess:
     def __init__(self):
         self.template = self.load_template()
 
-    def persona(self, mode = 'mode_default', persona:str="친절한 상담원"):
+    def persona(self, tplt, persona:str="친절한 상담원"):
         '''
         Args:
             - persona(string): 사용자가 입력한 persona 정보
         Returns:
             - __(string) persona 정보가 담긴 prompt
         '''
-        tplt = self.template["default"]
-        if mode == "mode_browse":
-            tplt = self.template["browse"]
+        # tplt = self.template["default"]
+        # if mode == "mode_browse":
+        #     tplt = self.template["browse"]
 
         res = tplt["persona"]["default"]
         if persona == "시니컬한 고양이":
@@ -36,20 +36,24 @@ class Preprocess:
         return res
     
     
-    def user_info(self, user_info:dict):
+    def user_info(self, tplt, user_info:dict):
         '''
         Args:
             - user_info(dict): 사용자가 입력한 user 정보
         Returns:
             - __(string): user 정보가 담긴 prompt
         '''
+
+        user_tplt = tplt["user_info"]
         name = user_info["user_info_name"]
         age = user_info["user_info_age"]
         sex = user_info["user_info_sex"]
         job = user_info["user_info_job"]
         hobby = user_info["user_info_hobby"]
 
-        return f'''(Questioner's Information) Name: {name}, Age Group: {age}, Sex: {sex}, Job: {job}, Hobby: {hobby}'''
+        rules = {"name":name, "age":age, "sex":sex, "job":job, "hobby":hobby}
+
+        return user_tplt.format(**rules)
     
     def load_yaml(self, dir):
         with open(dir, encoding='utf8') as f:
@@ -87,7 +91,7 @@ class Prompt(Preprocess):
 
         chat_prompt = PromptTemplate(
             input_variables = input_variables,
-            template = self.tplt["instruction"] + self.persona(mode = "mode_default", persona=persona) + self.user_info(user_info=user_info) + self.tplt["base"]
+            template = self.tplt["instruction"] + self.persona(tplt=self.tplt, persona=persona) + self.user_info(tplt=self.tplt, user_info=user_info) + self.tplt["base"]
             )
         
         prompt = ChatPromptTemplate.from_messages([
@@ -96,15 +100,17 @@ class Prompt(Preprocess):
                 ])
 
         # LOGGING
-        log =  self.tplt["instruction"] + self.persona(mode = "mode_default", persona=persona)
+        log =  self.tplt["instruction"] + self.persona(tplt=self.tplt, persona=persona)
         PubsubChatLog.publish('프롬프트 생성 완료!')
         PubsubChatLog.publish(log)
 
         return prompt
-
-# class Action(BaseModel):
-#     action: str = Field(description="action to take")
-#     action_input: str = Field(description="input to the action")
+    
+class Action(BaseModel):
+    action: str = Field(description="action to take")
+    action_input: str = Field(description="input to the action")
+        
+parser = PydanticOutputParser(pydantic_object=Action)
 
 class BrowsePrompt(Preprocess):
     '''
@@ -141,16 +147,21 @@ class BrowsePrompt(Preprocess):
         PubsubChatLog.publish('프롬프트 생성 ing...........')
 
         input_variables = ["history", "input", "agent_scratchpad"]
-        # parser = PydanticOutputParser(pydantic_object=Action)
+        
+        suffix_info = {"persona":self.persona(tplt=self.tplt, persona=persona), 
+                       "user_info":self.user_info(tplt=self.tplt, user_info=user_info)}
+
+        suffix =  self.tplt["suffix"].format(**suffix_info) + self.tplt["base"]
+
         chat_prompt = ZeroShotAgent.create_prompt(
                 self.tools, 
                 prefix=self.tplt["prefix"],
-                suffix = self.tplt["suffix"] + self.persona(mode = "mode_browse", persona=persona) + self.user_info(user_info=user_info) + self.tplt["base"],
+                suffix=suffix,
                 input_variables=input_variables
             )
         
         # LOGGING
-        log = self.tplt["prefix"] + self.tplt["suffix"] + self.persona(mode = "mode_browse", persona=persona) + self.tplt["base"]
+        log = self.tplt["prefix"] + suffix
         PubsubChatLog.publish('프롬프트 생성 완료!')
         PubsubChatLog.publish(log)
 
