@@ -90,25 +90,45 @@ def s3_list_objects_key(s3, bucket, prefix):
     '''
     key_list = []
     obj_list = s3_list_objects(s3,bucket,prefix)
-    print("s3_list_objects")
-    print(obj_list)
+
     if obj_list is not None:
         for obj in obj_list:
             key = obj['Key']
             idx = key.rindex('/')
-            # 파일 최종 경로가 prefix 거나, key 자체가 prefix 아닐때 저장
-            print("key[0:idx + 1]")
-            print(key[0:idx + 1])
-            key_list.append(key)
+            # 파일 최종 경로가 prefix 아닐때 저장
+        
+            if key[0:idx + 1] != key:
+                key_list.append(key)
+            
     
 
     return key_list
 
 
 
-
-
-
-
-
+def s3_delete_objects(s3, bucket, keys):
+    '''
+    s3 bucket 특정 경로 파일 삭제
+    :param s3: 연결된 s3 객체(boto3 client)
+    :param bucket: 버킷명
+    :param keys: 삭제할 object key 리스트 
+    :return: 성공 시 True, 실패 시 False 반환
+    '''
     
+    objects_to_delete = []
+    for key in keys:
+        objects_to_delete.append({'Key' : key})
+    
+    try:
+        s3.delete_objects(
+            Bucket = bucket,
+            Delete = {
+                'Objects' : objects_to_delete
+            }
+        )
+    except Exception as e:
+        current_app.logger.error(e)
+        return False
+    
+    return True
+
