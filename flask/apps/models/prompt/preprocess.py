@@ -23,10 +23,6 @@ class Preprocess:
         Returns:
             - __(string) persona 정보가 담긴 prompt
         '''
-        # tplt = self.template["default"]
-        # if mode == "mode_browse":
-        #     tplt = self.template["browse"]
-
         res = tplt["persona"]["default"]
         if persona == "시니컬한 고양이":
             res = tplt["persona"]["cat"]
@@ -106,11 +102,6 @@ class Prompt(Preprocess):
 
         return prompt
     
-class Action(BaseModel):
-    action: str = Field(description="action to take")
-    action_input: str = Field(description="input to the action")
-        
-parser = PydanticOutputParser(pydantic_object=Action)
 
 class BrowsePrompt(Preprocess):
     '''
@@ -166,3 +157,48 @@ class BrowsePrompt(Preprocess):
         PubsubChatLog.publish(log)
 
         return chat_prompt
+    
+    
+class DocsPrompt(Preprocess):
+    '''
+    기본 Prompt + Input = Prompt Template
+    '''
+        
+    def __init__(self):
+        super().__init__()
+        self.tplt = self.template["docs"]
+
+    def write_prompt(self, persona:str, user_info:dict):
+        '''
+        Args:
+            - persona(str): 사용자가 입력한 persona 정보
+            - user_info(dict): 사용자가 입력한 user 정보
+        Returns:
+            - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
+        '''
+
+        # LOGGING
+        PubsubChatLog.publish('프롬프트 생성 ing...........')
+
+        
+        system_info = {"persona":self.persona(tplt=self.tplt, persona=persona), "context":"{context}"}
+        system_prompt =  self.tplt["instruction"].format(**system_info)        
+        
+        input_variables = ["context"]
+
+        chat_prompt = PromptTemplate(
+            input_variables = input_variables,
+            template = system_prompt
+            )
+        
+        prompt = ChatPromptTemplate.from_messages([
+                SystemMessagePromptTemplate(prompt=chat_prompt),
+                HumanMessagePromptTemplate.from_template("{question}")
+                ])
+
+        # LOGGING
+        log = system_prompt
+        PubsubChatLog.publish('프롬프트 생성 완료!')
+        PubsubChatLog.publish(log)
+
+        return prompt

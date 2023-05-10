@@ -13,9 +13,13 @@ from langchain.document_loaders import PyPDFLoader, S3FileLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.chains import RetrievalQA, ConversationalRetrievalChain
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.redis import Redis
 import redis
+
+from apps.storage import s3
+import re, os, tempfile
+
 
 class SimpleChat:
     '''
@@ -133,18 +137,29 @@ class DocsChat:
     Index Search를 통해 문서 참조 기능이 적용된 Conversation Chain을 생성한다.
     '''
 
-    def __init__(self, prompt, index_name='test1'):
+    def __init__(self, prompt, file_index):
+        # Set Index
+        self.file, self.index = file_index, re.sub(r"\.[a-zA-Z0-9]+$", "", file_index.split(':')[-1])
+        
+        # REDIS URL
         self.redis_url = f"redis://{Config.REDIS_HOST}:{Config.REDIS_PORT}"
 
         self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
         self.embeddings = OpenAIEmbeddings(openai_api_key=ModelConfig.GPT.API_KEY)
-        self.prompt = prompt
+        
         # Check if Index Exists
-        self.embed_db = self.load_vectorstore(index_name) if self.check_index_exists(index_name) else self.create_vectorstore(index_name)
-        # self.index_chain = ConversationalRetrievalChain.from_llm(self.llm, self.embed_db.as_retriever(), return_source_documents=True)
-        self.qa = RetrievalQA.from_chain_type(llm=self.llm, chain_type="stuff", retriever=self.embed_db.as_retriever())
+        self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
+        self.qa = RetrievalQA.from_chain_type(llm=self.llm,
+                                              chain_type="stuff",
+                                              retriever=self.embed_db.as_retriever(),
+                                              chain_type_kwargs={"prompt": prompt})
+        
 
     def check_index_exists(self, index_name):
+        print("-------------------------------------")
+        print(f"INDEX: {index_name}")
+        print("-------------------------------------")
+
         client = redis.from_url(self.redis_url)
         try:
             client.ft(index_name).info()
@@ -159,12 +174,21 @@ class DocsChat:
     def create_vectorstore(self, index_name):
 
         # Load File from S3
-        dir = "/home/ubuntu/test/yum/AplusM/flask/apps/models/tmp/doc_test.pdf"
-        document = PyPDFLoader(dir).load()
-        # document = S3FileLoader(dir).load() ## s3 load로 수정 
+        conn = s3.s3_connection()
+        file = 'description/'+ self.file
+        
+        with tempfile.TemporaryDirectory() as temp_dir:
+            file_path = f"{temp_dir}/{file}"
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            s3.s3_get_object(conn, Config.BUCKET_NAME, file, file_path)
+            print("-------------------------------------")
+            print(file_path)
+            print("-------------------------------------")
+            document = PyPDFLoader(file_path).load() 
+                     
 
         # Text Split
-        docs = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0).split_documents(document)
+        docs = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50).split_documents(document)
 
         # Save to Redis with Index
         embed_db = Redis.from_documents(docs, self.embeddings, redis_url=self.redis_url,  index_name=index_name)
@@ -192,9 +216,8 @@ class DocsChat:
         Returns:
             - output(string): GPT 모델의 답변
         '''
-
+        
         PubsubChatLog.publish('답변 생성 ing...........')
-        # output = self.index_chain({"question":input, "chat_history":[]})
         output = self.qa.run(input)
 
         return output

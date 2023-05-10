@@ -26,8 +26,8 @@ class Chain:
             conversation_chain = BrowseChat(prompt)
 
         elif self.mode == "mode_docs":
-            prompt = Prompt().write_prompt(persona, user_info) # 수정 필요
-            conversation_chain = DocsChat(prompt, 'test1')
+            prompt = DocsPrompt().write_prompt(persona, user_info)
+            conversation_chain = DocsChat(prompt, '230308 (보도자료) 청년도약계좌 취급기관 모집 및 운영방향 중간발표:20230509145000.pdf')  # 수정 예정
 
         return conversation_chain
 
@@ -49,13 +49,13 @@ class ChatService(Chain):
         self.number += 1
         output = "  "
         # Predict
-        # try:
-        #     output = self.conversation_chain.chain(chat_Q)
-        #     PubsubChatLog.publish('답변 생성 완료!')
-        # except Exception as e:
-        #     PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
+        try:
+            output = self.conversation_chain.chain(chat_Q)
+            PubsubChatLog.publish('답변 생성 완료!')
+        except Exception as e:
+            PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
 
-        output = self.conversation_chain.chain(chat_Q)
+        # output = self.conversation_chain.chain(chat_Q)
         PubsubChatLog.publish('답변 생성 완료!')
 
         # DB Save
