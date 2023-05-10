@@ -1,9 +1,9 @@
+import jsonpickle
 from apps.models.chat.chain import SimpleChat, BrowseChat, DocsChat
 from apps.models.chat.history import SaveHistory
-import jsonpickle
 from apps.models.prompt.preprocess import *
+from apps.models.prompt.postprocess import *
 from apps.database.pubsub import PubsubChatLog
-
 
 class Chain:
 
@@ -48,9 +48,10 @@ class ChatService(Chain):
         # Set conversation_number
         self.number += 1
         output = "다시 질문해주시겠어요?"
+        
         # Predict
         try:
-            output = self.conversation_chain.chain(chat_Q)
+            output = postprocess(self.conversation_chain.chain(chat_Q))
             PubsubChatLog.publish('답변 생성 완료!')
         except Exception as e:
             PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')

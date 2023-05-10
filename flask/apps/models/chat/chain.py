@@ -161,7 +161,7 @@ class DocsChat:
             PubsubChatLog.publish('새로운 문서입니다.')
             return False
         # LOGGING
-        PubsubChatLog.publish('문서가 존재합니다.')
+        PubsubChatLog.publish('문서를 불러오는 중........')
         return True
 
     def create_vectorstore(self, index_name):
@@ -191,7 +191,7 @@ class DocsChat:
     def load_vectorstore(self, index_name):
 
         # LOGGING
-        PubsubChatLog.publish('문서를 불러오는 중........')
+        PubsubChatLog.publish('내용 검색 중........')
 
         # Load from existing index
         embed_db = Redis.from_existing_index(self.embeddings, redis_url=self.redis_url,  index_name=index_name)
@@ -206,15 +206,15 @@ class DocsChat:
         Returns:
             - output(string): GPT 모델의 답변
         '''
-                
+        # LOGGING
+        PubsubChatLog.publish('답변 생성 ing...........')
+        
         # Check if Index Exists
         self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
         self.qa = RetrievalQA.from_chain_type(llm=self.llm,
                                               chain_type="stuff",
                                               retriever=self.embed_db.as_retriever(),
                                               chain_type_kwargs={"prompt": self.prompt})
-        # LOGGING
-        PubsubChatLog.publish('답변 생성 ing...........')
         
         output = self.qa.run(input)
 
