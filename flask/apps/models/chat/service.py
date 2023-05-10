@@ -12,7 +12,7 @@ class Chain:
         self.number = 0
     
 
-    def chat(self, persona, user_info):
+    def chat(self, persona, user_info, file_index=None):
         self.persona = persona
         self.user_info = user_info
         conversation_chain = None
@@ -27,7 +27,7 @@ class Chain:
 
         elif self.mode == "mode_docs":
             prompt = DocsPrompt().write_prompt(persona, user_info)
-            conversation_chain = DocsChat(prompt, '230308 (보도자료) 청년도약계좌 취급기관 모집 및 운영방향 중간발표:20230509145000.pdf')  # 수정 예정
+            conversation_chain = DocsChat(prompt, file_index)
 
         return conversation_chain
 
@@ -37,17 +37,17 @@ class Chain:
 
 
 class ChatService(Chain):
-
-    def __init__(self, mode="mode_default", persona=None, user_info=None):
+  
+    def __init__(self, mode="mode_default", persona=None, user_info=None, file_index=None):
         super().__init__(mode)
-        self.conversation_chain = self.chat(persona, user_info)
+        self.conversation_chain = self.chat(persona, user_info, file_index)
         
 
     def predict(self, chat_Q):
 
         # Set conversation_number
         self.number += 1
-        output = "  "
+        output = "다시 질문해주시겠어요?"
         # Predict
         try:
             output = self.conversation_chain.chain(chat_Q)
@@ -56,7 +56,7 @@ class ChatService(Chain):
             PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
 
         # output = self.conversation_chain.chain(chat_Q)
-        PubsubChatLog.publish('답변 생성 완료!')
+        # PubsubChatLog.publish('답변 생성 완료!')
 
         # DB Save
         record = self.save(self.conversation_chain,
