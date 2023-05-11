@@ -1,3 +1,4 @@
+from flask import current_app
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
@@ -19,6 +20,7 @@ import redis
 
 from apps.storage import s3
 import re, os, tempfile
+
 
 
 class SimpleChat:
@@ -218,7 +220,10 @@ class DocsChat:
         '''
         
         PubsubChatLog.publish('답변 생성 ing...........')
-        output = self.qa.run(input)
+        try:
+            output = self.qa.run(input)
+        except Exception as e :
+            current_app.logger.error(e)
 
         return output
 

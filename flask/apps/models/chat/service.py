@@ -4,7 +4,34 @@ import jsonpickle
 from apps.models.prompt.preprocess import *
 from apps.database.pubsub import PubsubChatLog
 
+from typing import Callable
 
+class FunctionWrapper:
+    def __init__(self, func):
+        self.__name__ = func.__name__
+        self.__module__ = func.__module__
+
+    def __call__(self, *args, **kwargs):
+        func = getattr(__import__(self.__module__), self.__name__)
+        return func(*args, **kwargs)
+
+
+class FunctionWrapperHandler(jsonpickle.handlers.BaseHandler):
+    def flatten(self, obj, data):
+        if isinstance(obj, FunctionWrapper):
+            data['__callable__'] = obj.__name__
+            data['__module__'] = obj.__module__
+        return data
+
+    def restore(self, data):
+        if '__callable__' in data:
+            func_name = data['__callable__']
+            module_name = data['__module__']
+            func = getattr(__import__(module_name), func_name)
+            return FunctionWrapper(func)
+        else:
+            return data
+        
 class Chain:
 
     def __init__(self, mode = "mode_default"):
@@ -76,4 +103,5 @@ class ChatService(Chain):
         # return res
     
     def to_json(self):
+        jsonpickle.handlers.registry.register(FunctionWrapper, FunctionWrapperHandler)
         return jsonpickle.encode(self)
