@@ -275,18 +275,18 @@
                                 setTimeout((() => {
                                     s && s.click()
                                 }), 2e3)
-                                console.log("COMPLETE");
-                                $("#file_history").load(location.href+' #file_history');
                                 $.ajax({
                                     type: 'GET',
                                     url: '/file/list',
                                     success: function (data) {
-                            
                                         data_dict = data.file_list
                                         data_dict_values = Object.values(data_dict);
                                         data_dict_keys = Object.keys(data_dict);
                                         data_dict_length = Object.keys(data_dict).length;
-                            
+                                        $("#file_history option").remove();
+                                        $("#file_history").append(
+                                            '<option value="" selected disabled hidden style="font-family: gray;">문서를 선택해주세요.</option>'
+                                        )
                                         for (var i = 0; i < data_dict_length; i++) {
                                             $("#file_history").append(
                                                 '<option value ='
