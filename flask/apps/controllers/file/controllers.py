@@ -21,7 +21,7 @@ def upload():
         filename , filetype = file.filename.split('.')
         timestamp = Util.get_current_time()
         filedelimiter = Util.S3_FILE_DEL
-        filepath = f"{Config.BUCKET_FODLER}/{filename}{filedelimiter}{timestamp}{filetype}"
+        filepath = f"{Config.BUCKET_FODLER}/{filename}{filedelimiter}{timestamp}.{filetype}"
         current_app.logger.info(f"UPLOAD FILE INFO FILE PATH : {filepath}")
 
         if not s3_put_object(s3=s3,bucket=Config.BUCKET_NAME,file=file,path=filepath):
@@ -39,13 +39,17 @@ def list():
     prefix = 'description/'
     contents_list = s3_list_objects_key(s3, Config.BUCKET_NAME, prefix)
 
-    file_dict = {}
+    file_dict = {}  
     expression = r"^(.+)"+Util.S3_FILE_DEL+ r"(.+)\.(\w+)$"
     for content in contents_list:
-        if prefix in content:
+        if prefix in content :
+            # filename_full => filename:timestamp.filetype
+            # filename_notimestamp => filename.filetype
             filename_full = content.split('/')[-1] 
-
-            filename,timestamp,filetype = re.findall(expression,filename_full)[0]
+            w = re.search(expression,filename_full)
+            if w is not None:
+                filename,timestamp,filetype = w.groups()
+            
             filename_notimestamp = f"{filename}.{filetype}"
             file_dict[filename_full] = filename_notimestamp
             
