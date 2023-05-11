@@ -1,9 +1,10 @@
+from flask import current_app
+import jsonpickle
 from apps.models.chat.chain import SimpleChat, BrowseChat, DocsChat
 from apps.models.chat.history import SaveHistory
-import jsonpickle
 from apps.models.prompt.preprocess import *
+from apps.models.prompt.postprocess import *
 from apps.database.pubsub import PubsubChatLog
-
 
 class Chain:
 
@@ -12,7 +13,7 @@ class Chain:
         self.number = 0
     
 
-    def chat(self, persona, user_info):
+    def chat(self, persona, user_info, file_index=None):
         self.persona = persona
         self.user_info = user_info
         conversation_chain = None
@@ -26,8 +27,8 @@ class Chain:
             conversation_chain = BrowseChat(prompt)
 
         elif self.mode == "mode_docs":
-            prompt = Prompt().write_prompt(persona, user_info) # 수정 필요
-            conversation_chain = DocsChat(prompt)
+            prompt = DocsPrompt().write_prompt(persona, user_info)
+            conversation_chain = DocsChat(prompt, file_index)
 
         return conversation_chain
 
@@ -37,22 +38,24 @@ class Chain:
 
 
 class ChatService(Chain):
-
-    def __init__(self, mode="mode_default", persona=None, user_info=None):
+  
+    def __init__(self, mode="mode_default", persona=None, user_info=None, file_index=None):
         super().__init__(mode)
-        self.conversation_chain = self.chat(persona, user_info)
+        self.conversation_chain = self.chat(persona, user_info, file_index)
         
 
     def predict(self, chat_Q):
 
         # Set conversation_number
         self.number += 1
-        output = "  "
+        output = "다시 질문해주시겠어요?"
+        
         # Predict
         try:
-            output = self.conversation_chain.chain(chat_Q)
+            output = postprocess(self.conversation_chain.chain(chat_Q))
             PubsubChatLog.publish('답변 생성 완료!')
         except Exception as e:
+            current_app.logger.error(f'오류가 발생하였습니다. : {e}')
             PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
 
         # output = self.conversation_chain.chain(chat_Q)
