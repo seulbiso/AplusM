@@ -50,8 +50,8 @@ def list():
             if w is not None:
                 filename,timestamp,filetype = w.groups()
             
-            filename_notimestamp = f"{filename}.{filetype}"
-            file_dict[filename_full] = filename_notimestamp
+                filename_notimestamp = f"{filename}.{filetype}"
+                file_dict[filename_full] = filename_notimestamp
             
     
     response = {
