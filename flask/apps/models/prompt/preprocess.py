@@ -193,7 +193,7 @@ class DocsPrompt(Preprocess):
                 ])
 
         # LOGGING
-        log = system_prompt.replace("{context}", "")
+        log = system_prompt.replace("{context}","").replace("Answer: ","")
         PubsubChatLog.publish('프롬프트 생성 완료!')
         PubsubChatLog.publish(f"\n{log}")
 

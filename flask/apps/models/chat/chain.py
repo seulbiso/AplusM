@@ -178,7 +178,7 @@ class DocsChat:
                      
 
         # Text Split
-        docs = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50).split_documents(document)
+        docs = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50).split_documents(document)
 
         # Save to Redis with Index
         embed_db = Redis.from_documents(docs, self.embeddings, redis_url=self.redis_url,  index_name=index_name)
