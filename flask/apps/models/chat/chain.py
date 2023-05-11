@@ -171,9 +171,10 @@ class DocsChat:
         # Load File from S3
         conn = s3.s3_connection()
         file = 'description/'+ self.file
+        file_win = 'description\\'+ self.file
         
         with tempfile.TemporaryDirectory() as temp_dir:
-            file_path = f"{temp_dir}/{file}"
+            file_path = f"{temp_dir}\\{file_win}"
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             s3.s3_get_object(conn, Config.BUCKET_NAME, file, file_path)
             document = PyPDFLoader(file_path).load() 
@@ -210,12 +211,6 @@ class DocsChat:
         '''
         # LOGGING
         PubsubChatLog.publish('답변 생성 ing...........')
-<<<<<<< HEAD
-        try:
-            output = self.qa.run(input)
-        except Exception as e :
-            current_app.logger.error(e)
-=======
         
         # Check if Index Exists
         self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
@@ -225,7 +220,6 @@ class DocsChat:
                                               chain_type_kwargs={"prompt": self.prompt})
         
         output = self.qa.run(input)
->>>>>>> 5ba33c42fce6c3e205014cb1c48e4b006291bb32
 
         return output
 

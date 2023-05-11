@@ -29,11 +29,16 @@ def chat():
         persona = request.form['persona']
         user_info = json.loads(request.form['user_info'])
         mode = request.form['mode']
+        docs = request.form['docs']
+
+        current_app.logger.info(request)
     
+        current_app.logger.info(f"REQUEST PARAM \n mode : {mode} \n input : {input}\n persona : {persona}\n mode : {mode}\n docs : {docs}"
+                                )
         # Check if SimpleChat instance exists in session
         if 'chat' not in session:
             # Create a new SimpleChat instance and store it in session
-            chat = ChatService(mode, persona, user_info)
+            chat = ChatService(mode=mode, persona=persona, user_info=user_info, file_index= docs)
             session['chat'] = chat.to_json()
 
         else:
