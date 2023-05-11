@@ -1,6 +1,6 @@
 from flask import session , current_app
 import datetime
-
+from pytz import timezone
 from apps.database.session import cache
 
 
@@ -47,8 +47,8 @@ class PubsubChatLog(Pubsub):
         '''
   
         channel=cls.publish_channel_name()
-        
-        now = datetime.datetime.now().replace(microsecond=0).time()
+
+        now = datetime.datetime.now(timezone('Asia/Seoul')).replace(microsecond=0).time()
         message = u'[%s] %s' % (now,message)
 
         super().publish(message=message, channel=channel, red=cache)

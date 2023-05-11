@@ -14,7 +14,7 @@ app = Flask(__name__, template_folder=Config.TEMPLATES_DIR, static_folder=Config
 app.secret_key ='abcedateateataeate'
 app.config.from_object(Config.from_app_mode())
 #app.logger.addHandler(logging.StreamHandler(sys.stdout))
-app.logger.setLevel(logging.INFO)
+app.logger.setLevel(logging.DEBUG)
 Session(app)
 BlueprintRegister(app=app, module_path='apps.controllers', controller_name='controllers').register()
 

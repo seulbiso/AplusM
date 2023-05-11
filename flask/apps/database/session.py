@@ -20,5 +20,6 @@ def set_cache_init():
     # db에서 불러오는 코드로 변경예정
     app.logger.info("RUN app.before_first_request")
     
-    session_number_lastest = 0
-    cache.set("session_number_lastest",session_number_lastest)
+    if not cache.exists('session_number_lastest'):
+        session_number_lastest = 0
+        cache.set("session_number_lastest",session_number_lastest)

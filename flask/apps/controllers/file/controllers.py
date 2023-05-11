@@ -18,7 +18,8 @@ def upload():
         file = request.files[key]
         current_app.logger.info(f"REQUEST PRARM {file}")
     
-        filename , filetype = file.filename.split('.')
+        filetype = file.filename.split('.')[-1]
+        filename = file.filename.replace("."+filetype, "")
         timestamp = Util.get_current_time()
         filedelimiter = Util.S3_FILE_DEL
         filepath = f"{Config.BUCKET_FODLER}/{filename}{filedelimiter}{timestamp}.{filetype}"

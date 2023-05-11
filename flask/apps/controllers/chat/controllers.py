@@ -78,5 +78,11 @@ def event_stream(channel):
 
 @app.route('/stream')
 def stream():
-    return flask.Response(event_stream(channel=PubsubChatLog.publish_channel_name()),
+    current_app.logger.info('GET /stream')
+    current_app.logger.info(f'PubsubChatLog.publish_channel_name() {PubsubChatLog.publish_channel_name()}')
+    try:
+        response = flask.Response(event_stream(channel=PubsubChatLog.publish_channel_name()),
                           mimetype="text/event-stream")
+    except Exception as e:
+        current_app.logger.error(e)
+    return response
