@@ -163,7 +163,7 @@
     </script>
     <!-- NAVIGATION -->
     <nav id="mainNavbar" class="navbar navbar-vertical navbar-expand-lg scrollbar bg-dark navbar-dark">
-    
+
         <!-- Theme configuration (navbar) -->
         <script>
             let navigationColor = localStorage.getItem('navigationColor'),
@@ -182,7 +182,7 @@
         <div class="container-fluid">
             <!-- Collapse -->
             <div class="collapse navbar-collapse" id="sidenavCollapse">
-    
+
                 <!-- Navigation -->
                 <ul class="navbar-nav mb-lg-7" id="navbar">
                     <li class="nav-item">
@@ -190,15 +190,15 @@
                             <span>User Info</span>
                         </a>
                         <br>
-                        
+
                         <div class="form-check">
                             <div class="row mb-1">
                                 <div class="col-lg-auto">
                                     <label for="projectName" class="form-label" style="float:left">이름</label>
                                 </div>
                                 <div class="col-lg">
-                                    <input type="text" class="form-control px-3" id="user_info_name" placeholder="이름을 입력하세요"
-                                    required style="font-size: 1rem;">
+                                    <input type="text" class="form-control px-3" id="user_info_name"
+                                        placeholder="이름을 입력하세요" required style="font-size: 1rem;">
                                 </div>
                             </div>
                             <br>
@@ -255,8 +255,8 @@
                                     <label for="hobby" class="form-label" style="float:left">취미</label>
                                 </div>
                                 <div class="col-lg">
-                                    <input type="text" class="form-control px-3" id="user_info_hobby" placeholder="취미를 입력하세요"
-                                required style="font-size: 1rem;">
+                                    <input type="text" class="form-control px-3" id="user_info_hobby"
+                                        placeholder="취미를 입력하세요" required style="font-size: 1rem;">
                                 </div>
                             </div>
                         </div>
@@ -302,15 +302,15 @@
         <!-- HEADER -->
         <header class="container-fluid d-flex py-4 mb-1">
             <!-- Title -->
-            <select class="form-select" id="mode" style="width:250px; font-size: 1.7em; font-weight: bold;" >
-                <option selected value="mode_default" title="http://icons.iconarchive.com/icons/hopstarter/square-flags/16/South-Korea-Flag-icon.png">Simple Chat</option>
-                <option value="mode_browsing"  ng">Browsing Chat</option>
-                <option value="mode_docs" title="http://icons.iconarchive.com/icons/hopstarter/square-flags/16/South-Korea-Flag-icon.png">File Chat</option>
+            <select class="form-select" id="mode" style="width:250px; font-size: 1.7em; font-weight: bold;">
+                <option selected value="mode_default">Simple Chat</option>
+                <option value="mode_browsing">Browsing Chat</option>
+                <option value="mode_docs">File Chat</option>
             </select>
 
-            <div >　</div>
+            <div>　</div>
 
-                <!-- Button -->
+            <!-- Button -->
             <div class="col-auto" id="file_upload">
                 <div style="float:left">　
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="18" width="18">
@@ -319,30 +319,39 @@
                             style="fill: currentColor" />
                     </svg>
                 </div>
+                <!-- <div style="float:left">　
+                    <img class="delete-icon" style="widtth:25px; height:25px" , src="./static/assets/favicon/x_logo.png"
+                        alt="Delete">
+                </div> -->
 
-                
+
 
                 <div style="float:left">
-                    <select class="form-select col-auto" id="file_history" style="width:250px; font-size: 1.7em; font-weight: bold;">
+                    <select class="form-select col-auto" id="file_history"
+                        style="width:250px; font-size: 1.7em; font-weight: bold;">
                         <option value="" selected disabled hidden style="font-family: gray;">File Select</option>
-                        <option value="mode_default">청년주택.pdf</option>
+                        <!-- <option value="mode_default">청년주택.pdf</option>
                         <option value="mode_browsing">10년안에 목돈모으기.pdf</option>
-                        <option value="mode_docs">SKMS.pdf</option>
+                        <option value="mode_docs">SKMS.pdf</option> -->
                     </select>
                 </div>
 
                 <div style="float:left">　</div>
 
                 <div style="float:left">
-                    <a href="javascript: void(0);"
-                        class="d-flex align-items-center justify-content-center btn btn-light-green link-secondary rounded-circle w-50px h-50px p-0"
-                        title="Add attachement" data-bs-toggle="modal" data-bs-target="#uploadFilesModal">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="18" width="18">
-                            <path
-                                d="M21.84,3.46a7,7,0,0,0-9.84,0L1.62,13.83a5.13,5.13,0,0,0,7.25,7.25l8.43-8.43A3.29,3.29,0,1,0,12.65,8L7.46,13.18a1,1,0,0,0,0,1.42,1,1,0,0,0,1.41,0l5.19-5.19a1.3,1.3,0,0,1,2.21.91,1.32,1.32,0,0,1-.38.92L7.46,19.67a3.13,3.13,0,0,1-5.34-2.21A3.09,3.09,0,0,1,3,15.25L13.41,4.87a5,5,0,0,1,7,7l-7.78,7.78a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l7.78-7.78a7,7,0,0,0,0-9.84Z"
-                                style="fill: currentColor" />
+                    <button type="button" class="btn btn-primary" style="padding: 1rem 1rem;" data-bs-toggle="modal"
+                        data-bs-target="#uploadFilesModal">
+                        <svg viewBox="0 0 24 24" height="16" width="16" class="me-1" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 23.25L12 14.25" fill="none" stroke="currentColor" stroke-linecap="round"
+                                stroke-linejoin="round" stroke-width="1.5" />
+                            <path d="M8.25 18L12 14.25 15.75 18" fill="none" stroke="currentColor"
+                                stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                            <path d="M17.25,15.75h1.125a4.875,4.875,0,1,0-2.764-8.885A7.5,7.5,0,1,0,6.75,15.6"
+                                fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="1.5" />
                         </svg>
-                    </a>
+                        Upload
+                    </button>
                 </div>
             </div>
 
@@ -460,7 +469,7 @@
                                             id="message" placeholder="Type a message">
                                     </div>
                                 </div>
-                                
+
 
                                 <div class="w-100 d-block d-md-none"></div>
 
@@ -570,7 +579,7 @@
                         aria-label="Close">Cancel</button>
 
                     <!-- Button -->
-                    <button type="button" class="btn btn-primary" data-upload-files>Upload</button>
+                    <button type="button" class="btn btn-primary" id="upload" data-upload-files>Upload</button>
                 </div>
                 <!-- End Footer -->
             </div>
