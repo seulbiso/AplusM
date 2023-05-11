@@ -10,10 +10,9 @@ from langchain import SerpAPIWrapper, LLMChain
 from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
 from apps.database.pubsub import PubsubChatLog
 
-from langchain.document_loaders import PyPDFLoader, S3FileLoader
+from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
-from langchain.chains import RetrievalQA, ConversationalRetrievalChain
+from langchain.chains import RetrievalQA
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.redis import Redis
 import redis
@@ -114,25 +113,22 @@ class BrowseChat:
 
         # LOGGING
         PubsubChatLog.publish('답변 생성 ing...........')
-
+        PubsubChatLog.publish('Google 검색 ing...........')
     
         response = self.agent_chain({"input":input})
         output = response['output']
         steps = json.loads(json.dumps(response["intermediate_steps"], indent=2, ensure_ascii=False))
 
         # LOGGING
-        for i, step in enumerate(steps):
-            if i == 0:
-                PubsubChatLog.publish(step[0][-1])
-            else: 
-                PubsubChatLog.publish(f"Thought: {step[0][-1]}")
-            PubsubChatLog.publish(f"Observation: {step[-1]}")
+        for step in steps:
+            PubsubChatLog.publish(f"\nThought: {step[0][-1]}" + f"\nObservation: {step[-1]}")
 
         return output
 
     def to_json(self):
         return jsonpickle.encode(self)
     
+
 
 class DocsChat:
     '''
@@ -143,18 +139,15 @@ class DocsChat:
         # Set Index
         self.file, self.index = file_index, re.sub(r"\.[a-zA-Z0-9]+$", "", file_index.split(':')[-1])
         
-        # REDIS URL
+        # Redis URL
         self.redis_url = f"redis://{Config.REDIS_HOST}:{Config.REDIS_PORT}"
-
+        
+        # Models
         self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
         self.embeddings = OpenAIEmbeddings(openai_api_key=ModelConfig.GPT.API_KEY)
         
-        # Check if Index Exists
-        self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
-        self.qa = RetrievalQA.from_chain_type(llm=self.llm,
-                                              chain_type="stuff",
-                                              retriever=self.embed_db.as_retriever(),
-                                              chain_type_kwargs={"prompt": prompt})
+        # Prompt
+        self.prompt = prompt
         
 
     def check_index_exists(self, index_name):
@@ -170,7 +163,7 @@ class DocsChat:
             PubsubChatLog.publish('새로운 문서입니다.')
             return False
         # LOGGING
-        PubsubChatLog.publish('문서가 존재합니다.')
+        PubsubChatLog.publish('문서를 불러오는 중........')
         return True
 
     def create_vectorstore(self, index_name):
@@ -183,9 +176,6 @@ class DocsChat:
             file_path = f"{temp_dir}/{file}"
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             s3.s3_get_object(conn, Config.BUCKET_NAME, file, file_path)
-            print("-------------------------------------")
-            print(file_path)
-            print("-------------------------------------")
             document = PyPDFLoader(file_path).load() 
                      
 
@@ -203,7 +193,7 @@ class DocsChat:
     def load_vectorstore(self, index_name):
 
         # LOGGING
-        PubsubChatLog.publish('문서를 불러오는 중........')
+        PubsubChatLog.publish('내용 검색 중........')
 
         # Load from existing index
         embed_db = Redis.from_existing_index(self.embeddings, redis_url=self.redis_url,  index_name=index_name)
@@ -218,12 +208,24 @@ class DocsChat:
         Returns:
             - output(string): GPT 모델의 답변
         '''
-        
+        # LOGGING
         PubsubChatLog.publish('답변 생성 ing...........')
+<<<<<<< HEAD
         try:
             output = self.qa.run(input)
         except Exception as e :
             current_app.logger.error(e)
+=======
+        
+        # Check if Index Exists
+        self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
+        self.qa = RetrievalQA.from_chain_type(llm=self.llm,
+                                              chain_type="stuff",
+                                              retriever=self.embed_db.as_retriever(),
+                                              chain_type_kwargs={"prompt": self.prompt})
+        
+        output = self.qa.run(input)
+>>>>>>> 5ba33c42fce6c3e205014cb1c48e4b006291bb32
 
         return output
 

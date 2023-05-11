@@ -1,37 +1,10 @@
+import jsonpickle
 from apps.models.chat.chain import SimpleChat, BrowseChat, DocsChat
 from apps.models.chat.history import SaveHistory
-import jsonpickle
 from apps.models.prompt.preprocess import *
+from apps.models.prompt.postprocess import *
 from apps.database.pubsub import PubsubChatLog
 
-from typing import Callable
-
-class FunctionWrapper:
-    def __init__(self, func):
-        self.__name__ = func.__name__
-        self.__module__ = func.__module__
-
-    def __call__(self, *args, **kwargs):
-        func = getattr(__import__(self.__module__), self.__name__)
-        return func(*args, **kwargs)
-
-
-class FunctionWrapperHandler(jsonpickle.handlers.BaseHandler):
-    def flatten(self, obj, data):
-        if isinstance(obj, FunctionWrapper):
-            data['__callable__'] = obj.__name__
-            data['__module__'] = obj.__module__
-        return data
-
-    def restore(self, data):
-        if '__callable__' in data:
-            func_name = data['__callable__']
-            module_name = data['__module__']
-            func = getattr(__import__(module_name), func_name)
-            return FunctionWrapper(func)
-        else:
-            return data
-        
 class Chain:
 
     def __init__(self, mode = "mode_default"):
@@ -39,7 +12,7 @@ class Chain:
         self.number = 0
     
 
-    def chat(self, persona, user_info):
+    def chat(self, persona, user_info, file_index=None):
         self.persona = persona
         self.user_info = user_info
         conversation_chain = None
@@ -54,7 +27,7 @@ class Chain:
 
         elif self.mode == "mode_docs":
             prompt = DocsPrompt().write_prompt(persona, user_info)
-            conversation_chain = DocsChat(prompt, '230308 (보도자료) 청년도약계좌 취급기관 모집 및 운영방향 중간발표:20230509145000.pdf')  # 수정 예정
+            conversation_chain = DocsChat(prompt, file_index)
 
         return conversation_chain
 
@@ -64,26 +37,27 @@ class Chain:
 
 
 class ChatService(Chain):
-
-    def __init__(self, mode="mode_default", persona=None, user_info=None):
+  
+    def __init__(self, mode="mode_default", persona=None, user_info=None, file_index=None):
         super().__init__(mode)
-        self.conversation_chain = self.chat(persona, user_info)
+        self.conversation_chain = self.chat(persona, user_info, file_index)
         
 
     def predict(self, chat_Q):
 
         # Set conversation_number
         self.number += 1
-        output = "  "
+        output = "다시 질문해주시겠어요?"
+        
         # Predict
         try:
-            output = self.conversation_chain.chain(chat_Q)
+            output = postprocess(self.conversation_chain.chain(chat_Q))
             PubsubChatLog.publish('답변 생성 완료!')
         except Exception as e:
             PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
 
         # output = self.conversation_chain.chain(chat_Q)
-        PubsubChatLog.publish('답변 생성 완료!')
+        # PubsubChatLog.publish('답변 생성 완료!')
 
         # DB Save
         record = self.save(self.conversation_chain,
@@ -103,5 +77,4 @@ class ChatService(Chain):
         # return res
     
     def to_json(self):
-        jsonpickle.handlers.registry.register(FunctionWrapper, FunctionWrapperHandler)
         return jsonpickle.encode(self)

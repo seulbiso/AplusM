@@ -4,9 +4,6 @@ from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, H
 from langchain.agents import ZeroShotAgent, Tool
 from config import ModelConfig
 from apps.database.pubsub import PubsubChatLog
-import os
-from langchain.output_parsers import PydanticOutputParser, OutputFixingParser, RetryOutputParser
-from pydantic import BaseModel, Field, validators
 
 class Preprocess:
     '''
@@ -53,12 +50,10 @@ class Preprocess:
     
     def load_yaml(self, dir):
         with open(dir, encoding='utf8') as f:
-            res =yaml.load(f, Loader=yaml.FullLoader)
-        return res
+            return yaml.load(f, Loader=yaml.FullLoader)
 
     def load_template(self, dir = "apps/models/prompt/prompt_template.yaml"):
-        tmpl = self.load_yaml(dir)
-        return tmpl
+        return self.load_yaml(dir)
     
     
 
@@ -98,7 +93,7 @@ class Prompt(Preprocess):
         # LOGGING
         log =  self.tplt["instruction"] + self.persona(tplt=self.tplt, persona=persona)
         PubsubChatLog.publish('프롬프트 생성 완료!')
-        PubsubChatLog.publish(log)
+        PubsubChatLog.publish(f"\n{log}")
 
         return prompt
     
@@ -154,14 +149,14 @@ class BrowsePrompt(Preprocess):
         # LOGGING
         log = self.tplt["prefix"] + suffix
         PubsubChatLog.publish('프롬프트 생성 완료!')
-        PubsubChatLog.publish(log)
+        PubsubChatLog.publish(f"\n{log}")
 
         return chat_prompt
     
     
 class DocsPrompt(Preprocess):
     '''
-    기본 Prompt + Input = Prompt Template
+    기본 Prompt + Context +  Input = Prompt Template
     '''
         
     def __init__(self):
@@ -172,16 +167,17 @@ class DocsPrompt(Preprocess):
         '''
         Args:
             - persona(str): 사용자가 입력한 persona 정보
-            - user_info(dict): 사용자가 입력한 user 정보
         Returns:
-            - prompt(ChatPromptTemplate): ConversationChain에 담길 Prompt
+            - prompt(ChatPromptTemplate): RetrievalQA에 담길 Prompt
         '''
 
         # LOGGING
         PubsubChatLog.publish('프롬프트 생성 ing...........')
 
         
-        system_info = {"persona":self.persona(tplt=self.tplt, persona=persona), "context":"{context}"}
+        system_info = {"persona":self.persona(tplt=self.tplt, persona=persona), 
+                       "user_info":self.user_info(tplt=self.tplt, user_info=user_info),
+                       "context":"{context}"}
         system_prompt =  self.tplt["instruction"].format(**system_info)        
         
         input_variables = ["context"]
@@ -197,8 +193,8 @@ class DocsPrompt(Preprocess):
                 ])
 
         # LOGGING
-        log = system_prompt
+        log = system_prompt.replace("{context}", "")
         PubsubChatLog.publish('프롬프트 생성 완료!')
-        PubsubChatLog.publish(log)
+        PubsubChatLog.publish(f"\n{log}")
 
         return prompt
