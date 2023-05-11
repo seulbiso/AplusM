@@ -27,6 +27,7 @@ def upload():
             return error(50000)
 
         current_app.logger.info("SUCCESS S3 PUT OBJECT")
+        
     return ok()
 
 @app.route('/list', methods=['GET'])
