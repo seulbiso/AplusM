@@ -22,14 +22,14 @@ $(document).ready(() => {
     var check_mode = $('#mode option:selected').val();
     $('#file_upload').hide();
 
-    //file 가지고 오기
-    $('#refresh_docs').on('click', function () {
-        $('#file_history option').remove();
-        $("#file_history").append(
-            '<option value="" selected disabled hidden style="font-family: gray;">문서를 선택해주세요.</option>'
-        )
-        load_docs();
-    });
+    // //file 가지고 오기
+    // $('#refresh_docs').on('click', function () {
+    //     $('#file_history option').remove();
+    //     $("#file_history").append(
+    //         '<option value="" selected disabled hidden style="font-family: gray;">문서를 선택해주세요.</option>'
+    //     )
+    //     load_docs();
+    // });
 
 
     // mode 선택
