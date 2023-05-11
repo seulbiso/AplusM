@@ -4,22 +4,33 @@
 
 $(document).ready(() => {
 
+    // $('.dropdown').on('click', '.form-select', function(e) {
+    //     e.stopPropagation();
+    //     $(this).siblings('.dropdown-menu').toggleClass('show');
+    //   });
 
-    // // Handle click on delete icon
-    // $('.delete-icon').click(function (event) {
-    //     event.stopPropagation(); // Prevent the dropdown from closing
-    //     $('#myModal').modal('show');
-    // });
+    //   $('.dropdown').on('click', '.dropdown-menu .dropdown-item', function() {
+    //     var selectedValue = $(this).text().trim();
+    //     $(this).closest('.dropdown').find('.form-select').text(selectedValue);
+    //     $(this).closest('.dropdown-menu').removeClass('show');
+    //   });
 
-    // // Handle click on dropdown item
-    // $('.dropdown-item').click(function () {
-    //     var value = $(this).data('value');
-    //     $('#dropdownMenuButton').text(value);
-    // });
-
+    //   $(document).click(function() {
+    //     $('.dropdown-menu').removeClass('show');
+    //   });
 
     var check_mode = $('#mode option:selected').val();
     $('#file_upload').hide();
+
+    //file 가지고 오기
+    $('#refresh_docs').on('click', function () {
+        $('#file_history option').remove();
+        $("#file_history").append(
+            '<option value="" selected disabled hidden style="font-family: gray;">문서를 선택해주세요.</option>'
+        )
+        load_docs();
+    });
+
 
     // mode 선택
     var docs_flag = false;
@@ -31,47 +42,30 @@ $(document).ready(() => {
                 load_docs();
                 docs_flag = true;
             }
-            console.log(docs_flag);
         } else {
             $('#file_upload').hide();
         }
     });
 
-    // // Add "X" image and text to each option
-    // $('#file_select option').each(function () {
-    //     var optionText = $(this).text();
-    //     $(this).html(optionText + ' <img class="delete-option" src="./static/assets/favicon/x_logo.png" alt="Delete">');
-    // });
-
-    // // Handle click event on "X" image
-    // $(document).on('click', '.delete-option', function () {
-    //     var optionValue = $(this).closest('option').val();
-    //     var optionText = $(this).closest('option').text();
-
-    //     // Show modal with option information and delete confirmation
-    //     // Replace the code below with your own modal implementation
-    //     showModal(optionText, function () {
-    //         // Delete the option from the select box
-    //         $('#file_select option[value="' + optionValue + '"]').remove();
-    //     });
-    // });
-
-    // // Function to show the modal
-    // function showModal(text, callback) {
-    //     // Replace the code below with your own modal implementation
-    //     console.log('Delete option: ' + text);
-    //     if (confirm('Are you sure you want to delete this option?')) {
-    //         callback();
-    //     }
-    // }
+    $('#delete_docs').on('click', function () {
+        var docs = $('#file_history option:selected').val();
+        console.log(docs);
+        $.ajax({
+            type: 'POST',
+            url: '/file/delete',
+            data: {
+                file_delete: docs
+            },
+            success: function (data) {
+                $('#file_history option').remove();
+                $("#file_history").append(
+                    '<option value="" selected disabled hidden style="font-family: gray;">문서를 선택해주세요.</option>'
+                )
+                load_docs();
+            }
+        });
+    });
 });
-
-// $(document).on("click", ".delete-icon", function() {
-//     $(this).closest("option").remove();
-//   });
-
-
-
 
 
 function load_docs() {
@@ -84,7 +78,6 @@ function load_docs() {
             data_dict_values = Object.values(data_dict);
             data_dict_keys = Object.keys(data_dict);
             data_dict_length = Object.keys(data_dict).length;
-
             for (var i = 0; i < data_dict_length; i++) {
                 $("#file_history").append(
                     '<option value ='
@@ -94,6 +87,18 @@ function load_docs() {
                     + '</option>'
                 )
             }
+
+            // for (var i = 0; i < data_dict_length; i++) {
+            //     $("#file_test").append(
+            //         '<p class="dropdown-item form-select"'
+            //         + 'data-value='
+            //         + '"' + data_dict_keys[i] + '"'
+            //         + '>'
+            //         + data_dict_values[i]
+            //         +'<img class="delete-icon" style="widtth:25px; height:25px" , src="./static/assets/favicon/x_logo.png" alt="Delete">'
+            //         + '</p>'
+            //     )
+            // }
         }
     });
 };
