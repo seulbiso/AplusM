@@ -1,6 +1,6 @@
 global bad_answer
 
-bad_answer = ["NA", "N/A", "NONE", " ", "NULL"]
+bad_answer = ["NA", "N/A", "NONE", " ", "NULL", "없음"]
 
 def postprocess(output):
     if output.upper() in bad_answer:

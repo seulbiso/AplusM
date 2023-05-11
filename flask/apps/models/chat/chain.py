@@ -31,7 +31,7 @@ class SimpleChat:
     def __init__(self, prompt):
         self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.7)
         self.prompt = prompt
-        self.chatgpt_chain = ConversationChain(
+        self.conv = ConversationChain(
             llm = self.llm, 
             prompt = self.prompt,
             verbose = True, 
@@ -47,7 +47,7 @@ class SimpleChat:
         '''
 
         PubsubChatLog.publish('답변 생성 ing...........')
-        output = self.chatgpt_chain.predict(input=input)
+        output = self.conv.predict(input=input)
 
         return output
 
@@ -86,7 +86,7 @@ class BrowseChat:
 
 
         # Chain 생성 = Agent + Tools + Memory
-        self.agent_chain = AgentExecutor.from_agent_and_tools(agent=self.agent, 
+        self.conv = AgentExecutor.from_agent_and_tools(agent=self.agent, 
                                                               tools=self.tools, 
                                                               verbose=True, 
                                                               memory=self.memory, 
@@ -104,7 +104,7 @@ class BrowseChat:
         '''
         output = "  "
 
-        self.agent_chain.tools = [
+        self.conv.tools = [
             Tool(
                 name = "Search",
                 func= self.search.run,
@@ -116,7 +116,7 @@ class BrowseChat:
         PubsubChatLog.publish('답변 생성 ing...........')
         PubsubChatLog.publish('Google 검색 ing...........')
     
-        response = self.agent_chain({"input":input})
+        response = self.conv({"input":input})
         output = response['output']
         steps = json.loads(json.dumps(response["intermediate_steps"], indent=2, ensure_ascii=False))
 
@@ -215,12 +215,12 @@ class DocsChat:
         
         # Check if Index Exists
         self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
-        self.qa = RetrievalQA.from_chain_type(llm=self.llm,
+        self.conv = RetrievalQA.from_chain_type(llm=self.llm,
                                               chain_type="stuff",
                                               retriever=self.embed_db.as_retriever(),
                                               chain_type_kwargs={"prompt": self.prompt})
         
-        output = self.qa.run(input)
+        output = self.conv.run(input)
 
         return output
 

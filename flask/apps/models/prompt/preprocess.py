@@ -147,7 +147,7 @@ class BrowsePrompt(Preprocess):
             )
         
         # LOGGING
-        log = self.tplt["prefix"] + suffix
+        log = self.tplt["prefix"] + suffix.replace(self.tplt["base"], "")
         PubsubChatLog.publish('프롬프트 생성 완료!')
         PubsubChatLog.publish(f"\n{log}")
 

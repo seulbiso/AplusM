@@ -1,12 +1,12 @@
 import json
 from flask import session
-from langchain.schema import messages_from_dict, messages_to_dict
+from langchain.schema import messages_from_dict, messages_to_dict, HumanMessage, AIMessage
 
 
 class SaveHistory:
 
-    def __init__(self, conversation_chain, conversation_number, mode, persona, user_info):
-        self.memory = messages_to_dict(conversation_chain.memory.chat_memory.messages)
+    def __init__(self, conversation_chain, conversation_number, mode, persona, user_info, i, o):
+        self.memory = self.set_memory(self, i, o) if mode == "mode_default" else messages_to_dict(conversation_chain.memory.chat_memory.messages)
         self.mode = mode
         self.persona = persona
         self.user_info = user_info
@@ -44,3 +44,5 @@ class SaveHistory:
         res.append(ai_message)
         return res
 
+    def set_memory(self, i, o):
+        return list(HumanMessage(content=i, additional_kwargs={}), AIMessage(content=o, additional_kwargs={}))
