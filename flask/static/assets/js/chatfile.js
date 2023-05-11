@@ -32,7 +32,7 @@ $(document).ready(() => {
         if (check_mode == 'mode_docs') {
             $('#file_upload').show();
             if (docs_flag == false) {
-                // load_docs();
+                load_docs();
                 docs_flag = true;
             }
             console.log(docs_flag);
@@ -88,14 +88,26 @@ function load_docs() {
             data_dict_values = Object.values(data_dict);
             data_dict_keys = Object.keys(data_dict);
             data_dict_length = Object.keys(data_dict).length;
-
+            console.log(data_dict);
             for (var i = 0; i < data_dict_length; i++) {
                 $("#file_history").append(
-                    '<p value ='
+                    '<option value ='
                     + '"' + data_dict_keys[i] + '"'
                     + '>'
                     + data_dict_values[i]
-                    + '</p>'
+                    + '</option>'
+                )
+            }
+
+            for (var i = 0; i < data_dict_length; i++) {
+                $("#file_test").append(
+                    '<div class="dropdown-item"'
+                    + 'data-value='
+                    + '"' + data_dict_keys[i] + '"'
+                    + '>'
+                    + data_dict_values[i]
+                    +'<img class="delete-icon" style="widtth:25px; height:25px" , src="./static/assets/favicon/x_logo.png" alt="Delete">'
+                    + '</div>'
                 )
             }
         }
