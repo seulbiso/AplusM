@@ -24,7 +24,7 @@ class SaveHistory:
         session_number = "xxx"   # 수정 필요
         conversation_number = str(self.conversation_number)
         mode = self.mode
-        persona = json.dumps(self.persona, ensure_ascii=False)  # 수정 필요
+        persona = self.persona
         user_info = json.dumps(self.user_info, ensure_ascii=False)
         
         if type == "Human":
@@ -33,7 +33,7 @@ class SaveHistory:
             message = self.convert_message(self.memory[-1])
 
         message.update({"session_number":session_number, "conversation_number":conversation_number, "mode":mode, "persona":persona, "user_info":user_info})
-
+        print(message)
         return message
     
     def get_record(self):

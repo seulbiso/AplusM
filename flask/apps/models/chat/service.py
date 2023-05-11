@@ -62,7 +62,7 @@ class ChatService(Chain):
         # PubsubChatLog.publish('답변 생성 완료!')
 
         # DB Save
-        record = self.save(self.conversation_chain,
+        record = self.save(self.conversation_chain.chatgpt_chain,
                            self.number,
                            self.mode,
                            self.persona,
@@ -71,7 +71,7 @@ class ChatService(Chain):
 
 
     def save(self, *params):
-        # res = SaveHistory(*params).get_record()
+        res = SaveHistory(*params).get_record()
         '''
         DB SAVE 추가
         '''
