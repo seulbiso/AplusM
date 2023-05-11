@@ -1,5 +1,6 @@
 
 $(document).ready(() => {
+    
     $("#submit_msg").on("click", function (e) {
         e.preventDefault();
         var message = $("#message").val();
@@ -11,6 +12,8 @@ $(document).ready(() => {
         var check_user_info_hobby = $('#user_info_hobby').val();
         var user_info = {"user_info_name":check_user_info_name,"user_info_age": check_user_info_age, "user_info_sex":check_sex,"user_info_job": check_user_info_job,"user_info_hobby": check_user_info_hobby};
         var check_mode =  $('#mode option:selected').val();
+        var docs = "";
+        docs = $('#file_history option:selected').val();
         
         if (message.trim() !== "") {
             $.ajax({
@@ -20,7 +23,8 @@ $(document).ready(() => {
                 data: { chat_Q: message,
                         user_info: JSON.stringify(user_info),
                         persona: check_persona,
-                        mode : check_mode
+                        mode : check_mode,
+                        docs :  docs
                 },
                 success: function (data) {
                     
@@ -125,8 +129,18 @@ $(document).ready(() => {
         var check_user_info_job = $('#user_info_job option:selected').val();
     });
 
-    // //model 선택
+    var check_mode = $('#mode option:selected').val();
+     $('#file_upload').hide();
+    
+    
+
+    // mode 선택
     $('#mode').on('change', function () {
         var check_mode = $('#mode option:selected').val();
+        if(check_mode == 'mode_docs'){
+            $('#file_upload').show();
+        }else{
+            $('#file_upload').hide();
+        }
     });
 });

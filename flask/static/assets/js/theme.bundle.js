@@ -212,7 +212,7 @@
                         i.forEach((t => {
                             const n = {
                                 ...{
-                                    url: "https://webinning.co.uk/dashly/upload.php",
+                                    url: "/file/upload",
                                     previewTemplate: '\n        <form class="form" enctype="multipart/form-data">\n            <div ' +
                                             'class="dz-preview dz-file-preview">\n                <div class="dz-details d-' +
                                             'flex mb-1">\n                    <img class="dz-image img-fluid" data-dz-thumb' +
@@ -275,6 +275,29 @@
                                 setTimeout((() => {
                                     s && s.click()
                                 }), 2e3)
+                                console.log("COMPLETE");
+                                $("#file_history").load(location.href+' #file_history');
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '/file/list',
+                                    success: function (data) {
+                            
+                                        data_dict = data.file_list
+                                        data_dict_values = Object.values(data_dict);
+                                        data_dict_keys = Object.keys(data_dict);
+                                        data_dict_length = Object.keys(data_dict).length;
+                            
+                                        for (var i = 0; i < data_dict_length; i++) {
+                                            $("#file_history").append(
+                                                '<option value ='
+                                                + '"' + data_dict_keys[i] + '"'
+                                                + '>'
+                                                + data_dict_values[i]
+                                                + '</option>'
+                                            )
+                                        }
+                                    }
+                                });
                             })),
                             i && i.addEventListener("click", (e => {
                                 e.preventDefault(),

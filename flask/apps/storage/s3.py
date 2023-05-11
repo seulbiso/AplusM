@@ -1,6 +1,8 @@
+from flask import current_app
 import boto3
 from config import Config
 import logging
+
 
 
 def s3_connection():
@@ -8,6 +10,7 @@ def s3_connection():
     s3 bucket 연결
     :return: 연결된 s3 객체
     '''
+    current_app.logger.info("RUN s3_connection()")
     try:
         s3 = boto3.client( 
             service_name='s3',
@@ -17,10 +20,9 @@ def s3_connection():
         )
 
     except Exception as e:
-        logging.exception(e)
-        #exit(ERROR_S3_CONNECTION_FAILED)
+        current_app.logger.error(e)
     else :
-        logging.info("S3 BUCKET CONNECTED!")
+        current_app.logger.info("S3 BUCKET CONNECTED!")
         return s3
     
 
@@ -33,13 +35,16 @@ def s3_put_object(s3, bucket, file, path):
     :param path: 파일 경로
     :return: 성공 시 True, 실패 시 False 반환
     '''
+    current_app.logger.info("RUN s3_put_object()")
     try:
+        current_app.logger.info(f"file.content_type : {file.content_type}")
+        current_app.logger.info(f"path : {path}")
         s3.put_object(Bucket=bucket, 
                       Body =file,
                       Key = path, 
                       ContentType = file.content_type)
     except Exception as e:
-        logging.exception(e)
+        current_app.logger.error(e)
         return False
     return True   
 
@@ -53,10 +58,13 @@ def s3_get_object(s3, bucket, object_name, file_name):
     :param file_name: 저장할 파일 명(path)
     :return: 성공 시 True, 실패 시 False 반환
     '''
+    current_app.logger.info("RUN s3_get_object()")
+    current_app.logger.info(f"REQUEST PARM \n object_name:{object_name}\n file_name:{file_name}")
+    
     try:
         s3.download_file(bucket, object_name, file_name)
     except Exception as e:
-        logging.exception(e)
+        current_app.logger.error(e)
         return False
     return True
 
@@ -69,10 +77,11 @@ def s3_list_objects(s3, bucket, prefix):
     :param prefix: s3에 저장된 object 명
     :return: S3 파일 리스트 객체
     '''
+    current_app.logger.info("RUN s3_list_objects()")
     try :
         obj_list = s3.list_objects(Bucket=bucket, Prefix=prefix)['Contents']
     except Exception as e:
-        logging.exception(e)
+        current_app.logger.error(e)
 
     return obj_list
 
@@ -84,27 +93,50 @@ def s3_list_objects_key(s3, bucket, prefix):
     :param prefix: s3에 저장된 object 명
     :return: S3 파일 리스트 객체 KEY (파일명)
     '''
+    current_app.logger.info("RUN s3_list_objects_key()")
     key_list = []
     obj_list = s3_list_objects(s3,bucket,prefix)
-    print("s3_list_objects")
-    print(obj_list)
+
     if obj_list is not None:
         for obj in obj_list:
             key = obj['Key']
             idx = key.rindex('/')
-            # 파일 최종 경로가 prefix 거나, key 자체가 prefix 아닐때 저장
-            print("key[0:idx + 1]")
-            print(key[0:idx + 1])
-            key_list.append(key)
+            # 파일 최종 경로가 prefix 아닐때 저장
+        
+            if key[0:idx + 1] != key:
+                key_list.append(key)
+            
     
 
     return key_list
 
 
 
+def s3_delete_objects(s3, bucket, keys):
+    '''
+    s3 bucket 특정 경로 파일 삭제
+    :param s3: 연결된 s3 객체(boto3 client)
+    :param bucket: 버킷명
+    :param keys: 삭제할 object key 리스트 
+    :return: 성공 시 True, 실패 시 False 반환
+    '''
 
-
-
-
-
+    current_app.logger.info("RUN s3_delete_objects()")
     
+    objects_to_delete = []
+    for key in keys:
+        objects_to_delete.append({'Key' : key})
+    
+    try:
+        s3.delete_objects(
+            Bucket = bucket,
+            Delete = {
+                'Objects' : objects_to_delete
+            }
+        )
+    except Exception as e:
+        current_app.logger.error(e)
+        return False
+    
+    return True
+

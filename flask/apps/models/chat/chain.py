@@ -1,3 +1,4 @@
+from flask import current_app
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
@@ -18,6 +19,7 @@ import redis
 
 from apps.storage import s3
 import re, os, tempfile
+
 
 
 class SimpleChat:
@@ -169,9 +171,10 @@ class DocsChat:
         # Load File from S3
         conn = s3.s3_connection()
         file = 'description/'+ self.file
+        file_win = 'description\\'+ self.file
         
         with tempfile.TemporaryDirectory() as temp_dir:
-            file_path = f"{temp_dir}/{file}"
+            file_path = f"{temp_dir}\\{file_win}"
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
             s3.s3_get_object(conn, Config.BUCKET_NAME, file, file_path)
             document = PyPDFLoader(file_path).load() 
