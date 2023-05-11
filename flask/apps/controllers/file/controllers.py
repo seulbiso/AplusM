@@ -40,16 +40,10 @@ def list():
     contents_list = s3_list_objects_key(s3, Config.BUCKET_NAME, prefix)
 
     file_dict = {}
-    #expression = r"^(.+)@(.+)\.(\w+)$"   
     expression = r"^(.+)"+Util.S3_FILE_DEL+ r"(.+)\.(\w+)$"
     for content in contents_list:
         if prefix in content:
-            # filename_full => filename:timestamp.filetype
-            # filename_notimestamp => filename.filetype
             filename_full = content.split('/')[-1] 
-            # timestamp_filetype= re.split(filename_full, Util.S3_FILE_DEL)[-1]
-            # filetype = re.split(filename_full, '.')[-1]
-            # filename = filename_full
 
             filename,timestamp,filetype = re.findall(expression,filename_full)[0]
             filename_notimestamp = f"{filename}.{filetype}"
