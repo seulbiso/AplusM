@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import json
-import datetime
-from pytz import timezone
 from redis import Redis
 
 
@@ -106,10 +104,7 @@ class Config:
                                                       Config.DB_HOST, Config.DB_PORT, Config.DB_NAME)
 
 
-    @staticmethod
-    def get_current_time():
-        time_now = datetime.datetime.now(timezone('Asia/Seoul')).strftime("%Y%m%d%H%M%S")
-        return time_now
+    
 
 
 

@@ -4,6 +4,7 @@ from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
 from config import Config, ModelConfig
 import json, jsonpickle
+from apps.common.util import Util
 
 
 from langchain import SerpAPIWrapper, LLMChain
@@ -137,7 +138,7 @@ class DocsChat:
 
     def __init__(self, prompt, file_index):
         # Set Index
-        self.file, self.index = file_index, re.sub(r"\.[a-zA-Z0-9]+$", "", file_index.split(':')[-1])
+        self.file, self.index = file_index, re.sub(r"\.[a-zA-Z0-9]+$", "", file_index.split(Util.S3_FILE_DEL)[-1])
         
         # Redis URL
         self.redis_url = f"redis://{Config.REDIS_HOST}:{Config.REDIS_PORT}"

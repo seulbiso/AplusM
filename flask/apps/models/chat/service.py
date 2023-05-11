@@ -1,3 +1,4 @@
+from flask import current_app
 import jsonpickle
 from apps.models.chat.chain import SimpleChat, BrowseChat, DocsChat
 from apps.models.chat.history import SaveHistory
@@ -50,14 +51,15 @@ class ChatService(Chain):
         output = "다시 질문해주시겠어요?"
         
         # Predict
-        try:
-            output = postprocess(self.conversation_chain.chain(chat_Q))
-            PubsubChatLog.publish('답변 생성 완료!')
-        except Exception as e:
-            PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
+        # try:
+        #     output = postprocess(self.conversation_chain.chain(chat_Q))
+        #     PubsubChatLog.publish('답변 생성 완료!')
+        # except Exception as e:
+        #     current_app.logger.error(f'오류가 발생하였습니다. : {e}')
+        #     PubsubChatLog.publish(f'오류가 발생하였습니다. : {e}')
 
-        # output = self.conversation_chain.chain(chat_Q)
-        # PubsubChatLog.publish('답변 생성 완료!')
+        output = self.conversation_chain.chain(chat_Q)
+        PubsubChatLog.publish('답변 생성 완료!')
 
         # DB Save
         record = self.save(self.conversation_chain,
