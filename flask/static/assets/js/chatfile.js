@@ -5,17 +5,21 @@
 $(document).ready(() => {
 
 
-    // // Handle click on delete icon
-    // $('.delete-icon').click(function (event) {
-    //     event.stopPropagation(); // Prevent the dropdown from closing
-    //     $('#myModal').modal('show');
-    // });
-
-    // // Handle click on dropdown item
-    // $('.dropdown-item').click(function () {
-    //     var value = $(this).data('value');
-    //     $('#dropdownMenuButton').text(value);
-    // });
+    $('.dropdown-toggle').click(function() {
+        $(this).siblings('.dropdown-menu').toggle();
+      });
+    
+      $('.dropdown-item').click(function() {
+        var selectedOption = $(this).text();
+        $('.dropdown-toggle').text(selectedOption);
+        $('.dropdown-menu').hide();
+      });
+    
+      $(document).click(function(event) {
+        if (!$(event.target).closest('.dropdown').length) {
+          $('.dropdown-menu').hide();
+        }
+      });
 
 
     var check_mode = $('#mode option:selected').val();
@@ -28,7 +32,7 @@ $(document).ready(() => {
         if (check_mode == 'mode_docs') {
             $('#file_upload').show();
             if (docs_flag == false) {
-                load_docs();
+                // load_docs();
                 docs_flag = true;
             }
             console.log(docs_flag);
@@ -87,11 +91,11 @@ function load_docs() {
 
             for (var i = 0; i < data_dict_length; i++) {
                 $("#file_history").append(
-                    '<option value ='
+                    '<p value ='
                     + '"' + data_dict_keys[i] + '"'
                     + '>'
                     + data_dict_values[i]
-                    + '</option>'
+                    + '</p>'
                 )
             }
         }
