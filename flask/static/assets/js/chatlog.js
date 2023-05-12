@@ -7,7 +7,7 @@ function sse() {
     var iconDict = {
         '[IMG_INFO]' : './static/assets/images/chat/info.svg',
         '[IMG_PROMPT]' : './static/assets/images/chat/prompt.svg',
-        '[IMG_FILE]' : './static/assets/images/chat/file.svg',
+        '[IMG_DOCS]' : './static/assets/images/chat/file.svg',
         '[IMG_SEARCH]' : './static/assets/images/chat/google.svg'
     }
     var IMG_EMPTY_SRC = './static/assets/images/chat/empty.PNG'
