@@ -46,7 +46,7 @@ class SimpleChat:
             - output(string): GPT 모델의 답변
         '''
 
-        PubsubChatLog.publish('답변 생성 ing...........')
+        PubsubChatLog.publish('[IMG_INFO] 답변 생성 ing...........')
         output = self.conv.predict(input=input)
 
         return output
@@ -113,8 +113,8 @@ class BrowseChat:
         ]
 
         # LOGGING
-        PubsubChatLog.publish('답변 생성 ing...........')
-        PubsubChatLog.publish('Google 검색 ing...........')
+        PubsubChatLog.publish('[IMG_INFO] 답변 생성 ing...........')
+        PubsubChatLog.publish('[IMG_INFO] Google 검색 ing...........')
     
         response = self.conv({"input":input})
         output = response['output']
@@ -122,7 +122,7 @@ class BrowseChat:
 
         # LOGGING
         for step in steps:
-            PubsubChatLog.publish(f"\nThought: {step[0][-1]}" + f"\nObservation: {step[-1]}")
+            PubsubChatLog.publish(f"[IMG_SEARCH] Thought: {step[0][-1]}" + f"\nObservation: {step[-1]}")
 
         return output
 
@@ -161,10 +161,10 @@ class DocsChat:
             client.ft(index_name).info()
         except:
         # LOGGING
-            PubsubChatLog.publish('새로운 문서입니다.')
+            PubsubChatLog.publish('[IMG_INFO] 새로운 문서입니다.')
             return False
         # LOGGING
-        PubsubChatLog.publish('문서를 불러오는 중........')
+        PubsubChatLog.publish('[IMG_INFO] 문서를 불러오는 중........')
         return True
 
     def create_vectorstore(self, index_name):
@@ -188,14 +188,14 @@ class DocsChat:
         embed_db = Redis.from_documents(docs, self.embeddings, redis_url=self.redis_url,  index_name=index_name)
 
         # LOGGING
-        PubsubChatLog.publish('문서 저장 완료!')
+        PubsubChatLog.publish('[IMG_INFO] 문서 저장 완료!')
         return embed_db
     
 
     def load_vectorstore(self, index_name):
 
         # LOGGING
-        PubsubChatLog.publish('내용 검색 중........')
+        PubsubChatLog.publish('[IMG_INFO] 내용 검색 중........')
 
         # Load from existing index
         embed_db = Redis.from_existing_index(self.embeddings, redis_url=self.redis_url,  index_name=index_name)
@@ -211,16 +211,23 @@ class DocsChat:
             - output(string): GPT 모델의 답변
         '''
         # LOGGING
-        PubsubChatLog.publish('답변 생성 ing...........')
+        PubsubChatLog.publish('[IMG_INFO] 답변 생성 ing...........')
         
         # Check if Index Exists
         self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
         self.conv = RetrievalQA.from_chain_type(llm=self.llm,
                                               chain_type="stuff",
                                               retriever=self.embed_db.as_retriever(),
-                                              chain_type_kwargs={"prompt": self.prompt})
+                                              chain_type_kwargs={"prompt": self.prompt},
+                                              return_source_documents=True)
         
-        output = self.conv.run(input)
+        res = self.conv({"query": input})
+        print(res['source_documents'][0].metadata['page'])
+        output = res["result"]
+        
+        page = res['source_documents'][0].metadata['page']
+        # LOGGING
+        [PubsubChatLog.publish(f"[IMG_DOCS] 와우! {int(doc.metadata['page'])+1}page에서 찾았어요!") for doc in res['source_documents']]
 
         return output
 

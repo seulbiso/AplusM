@@ -3,10 +3,21 @@ from flask import session
 from langchain.schema import messages_from_dict, messages_to_dict, HumanMessage, AIMessage
 
 
-class SaveHistory:
+class SetMessage:
+    def __init__(self, i, o, mode, conv):
+        self.message = self.set_memory(i, o) if mode == "mode_docs" else conv.memory.chat_memory.messages  # 수정 필요
+
+    def set_memory(self, i, o):
+        res = []
+        res.append(HumanMessage(content=i, additional_kwargs={}))
+        res.append(AIMessage(content=o, additional_kwargs={}))
+        return res
+
+class SaveHistory(SetMessage):
 
     def __init__(self, conversation_chain, conversation_number, mode, persona, user_info, i, o):
-        self.memory = self.set_memory(self, i, o) if mode == "mode_default" else messages_to_dict(conversation_chain.memory.chat_memory.messages)
+        super().__init__(i, o, mode, conversation_chain)
+        self.memory = messages_to_dict(self.message)
         self.mode = mode
         self.persona = persona
         self.user_info = user_info
@@ -33,7 +44,7 @@ class SaveHistory:
             message = self.convert_message(self.memory[-1])
 
         message.update({"session_number":session_number, "conversation_number":conversation_number, "mode":mode, "persona":persona, "user_info":user_info})
-        print(message)
+  
         return message
     
     def get_record(self):
@@ -42,7 +53,5 @@ class SaveHistory:
         ai_message = self.message_to_record("AI")
         res.append(human_message)
         res.append(ai_message)
-        return res
 
-    def set_memory(self, i, o):
-        return list(HumanMessage(content=i, additional_kwargs={}), AIMessage(content=o, additional_kwargs={}))
+        return res

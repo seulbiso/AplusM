@@ -53,28 +53,28 @@ class ChatService(Chain):
         # Predict
         try:
             output = postprocess(self.conversation_chain.chain(chat_Q))
-            PubsubChatLog.publish('답변 생성 완료!')
+            PubsubChatLog.publish('[IMG_INFO] 답변 생성 완료!')
         except Exception as e:
-            error_message = f'오류가 발생하였습니다. : {e}'
+            error_message = f'[IMG_INFO] 오류가 발생하였습니다. : {e}'
             current_app.logger.error(error_message)
             PubsubChatLog.publish(error_message)
 
         # output = postprocess(self.conversation_chain.chain(chat_Q))
-        # PubsubChatLog.publish('답변 생성 완료!')
+        # PubsubChatLog.publish('[IMG_INFO] 답변 생성 완료!')
 
         # DB Save
-        # record = self.save(self.conversation_chain.conv,
-        #                    self.number,
-        #                    self.mode,
-        #                    self.persona,
-        #                    self.user_info,
-        #                    chat_Q,
-        #                    output)  ## return x 수정 예정
+        record = self.save(self.conversation_chain.conv,
+                           self.number,
+                           self.mode,
+                           self.persona,
+                           self.user_info,
+                           chat_Q,
+                           output)  ## return x 수정 예정
         return output
 
 
     def save(self, *params):
-        # res = SaveHistory(*params).get_record()
+        res = SaveHistory(*params).get_record()
         '''
         DB SAVE 추가
         '''
