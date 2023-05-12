@@ -106,8 +106,12 @@ class Config:
 
     
 
-
-
+class ModelConfig:
+    class GPT :
+        API_KEY = JsonConfig.get_data_model('GPT').get("API_KEY")
+    class SERP :
+        API_KEY = JsonConfig.get_data_model('SERP').get("API_KEY")
+ 
 class FlaskConfig:
     SQLALCHEMY_DATABASE_URI = Config.database_url()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -117,14 +121,7 @@ class FlaskConfig:
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
     SESSION_REDIS = Redis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
-    
 
-class ModelConfig:
-    class GPT :
-        API_KEY = JsonConfig.get_data_model('GPT').get("API_KEY")
-    class SERP :
-        API_KEY = JsonConfig.get_data_model('SERP').get("API_KEY")
- 
 
 class ProductionConfig(FlaskConfig):
     SQLALCHEMY_DATABASE_URI = Config.database_url()

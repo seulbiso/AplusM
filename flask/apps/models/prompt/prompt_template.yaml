@@ -54,7 +54,7 @@ browse:
         {user_info}
 
         # Begin!
-        Remember if there is nothing to Action, submit a Final Answer."
+        Remember if there is nothing to Action, submit a Final Answer"
 
     persona:
             default: "Speak like a friendly agent."

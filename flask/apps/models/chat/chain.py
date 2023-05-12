@@ -29,7 +29,7 @@ class SimpleChat:
     '''
 
     def __init__(self, prompt):
-        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.7)
+        self.llm = ChatOpenAI(temperature=0.7)
         self.prompt = prompt
         self.conv = ConversationChain(
             llm = self.llm, 
@@ -68,7 +68,7 @@ class BrowseChat:
             "hl": "ko",
             "gl": "kr"
         }
-        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
+        self.llm = ChatOpenAI(temperature=0.0)
         self.search = SerpAPIWrapper(params=self.params, serpapi_api_key = ModelConfig.SERP.API_KEY)
         self.tools = [
             Tool(
@@ -144,7 +144,7 @@ class DocsChat:
         self.redis_url = f"redis://{Config.REDIS_HOST}:{Config.REDIS_PORT}"
         
         # Models
-        self.llm = ChatOpenAI(openai_api_key = ModelConfig.GPT.API_KEY,temperature=0.0)
+        self.llm = ChatOpenAI(temperature=0.0)
         self.embeddings = OpenAIEmbeddings(openai_api_key=ModelConfig.GPT.API_KEY)
         
         # Prompt

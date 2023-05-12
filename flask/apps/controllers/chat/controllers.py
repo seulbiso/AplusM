@@ -35,6 +35,7 @@ def chat():
     
         current_app.logger.info(f"REQUEST PARAM \n mode : {mode} \n input : {input}\n persona : {persona}\n mode : {mode}\n docs : {docs}"
                                 )
+        
         # Check if SimpleChat instance exists in session
         if 'chat' not in session:
             # Create a new SimpleChat instance and store it in session
@@ -44,7 +45,7 @@ def chat():
         else:
             # Retrieve SimpleChat instance from session
             chat = jsonpickle.decode(session['chat'])
-
+        
         output = chat.predict(input)  
 
         chat_json = chat.to_json()

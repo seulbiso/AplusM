@@ -1,9 +1,9 @@
 from flask import Flask
 from flask_session import Session
 import logging
-import sys
+import sys, os
 
-from config import Config
+from config import Config, ModelConfig
 from apps.common.register import BlueprintRegister
 from apps.common.response import error
 
@@ -16,6 +16,8 @@ app.config.from_object(Config.from_app_mode())
 #app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
 Session(app)
+os.environ['OPENAI_API_KEY'] = ModelConfig.GPT.API_KEY
+
 BlueprintRegister(app=app, module_path='apps.controllers', controller_name='controllers').register()
 
 
