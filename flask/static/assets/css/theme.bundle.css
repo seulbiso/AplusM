@@ -42019,3 +42019,7 @@ code.hljs {
 .form-check-label-model{
   color:black;
 }
+
+.white-logo {
+  filter: brightness(0) invert(1);
+}

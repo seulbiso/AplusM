@@ -99,12 +99,9 @@ $(document).ready(() => {
     });
 
     // 화면 리셋 버튼
-    // $('resetThemeConfig').on("click", function (e) {
-    //     $.ajax({
-    //         url: "/",
-    //         type: "GET"
-    //     });
-    // });
+    $('#refresh').on('click', function() {
+        window.location.href = '/';
+      });
 
     // 페르소나 Default 값 설정
     $('#persona_one').prop("checked", true);
