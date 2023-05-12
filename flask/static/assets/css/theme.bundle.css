@@ -41982,6 +41982,13 @@ code.hljs {
   height: 200px; /* adjust the height as per your requirement */
 }
 
+#chat_log {
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+  height: 200px; /* adjust the height as per your requirement */
+}
+
 #chat_A {
   display: flex;
   flex-direction: column-reverse;

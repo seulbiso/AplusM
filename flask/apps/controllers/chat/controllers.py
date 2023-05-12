@@ -58,12 +58,6 @@ def chat():
 
     return jsonify(response)
 
-
-# def test_connect_db():
-#     rows = history_head.query.all()
-#     print("rows ", rows)
-
-
 def event_stream(channel):
     pubsub = cache.pubsub()
     pubsub.subscribe(channel)
