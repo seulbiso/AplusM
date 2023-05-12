@@ -222,10 +222,8 @@ class DocsChat:
                                               return_source_documents=True)
         
         res = self.conv({"query": input})
-        print(res['source_documents'][0].metadata['page'])
         output = res["result"]
         
-        page = res['source_documents'][0].metadata['page']
         # LOGGING
         [PubsubChatLog.publish(f"[IMG_DOCS] 와우! {int(doc.metadata['page'])+1}page에서 찾았어요!") for doc in res['source_documents']]
 
