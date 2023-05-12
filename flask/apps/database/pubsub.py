@@ -48,8 +48,10 @@ class PubsubChatLog(Pubsub):
   
         channel=cls.publish_channel_name()
 
-        now = datetime.datetime.now(timezone('Asia/Seoul')).replace(microsecond=0).time()
-        message = u'[%s] %s' % (now,message)
+        # now = datetime.datetime.now(timezone('Asia/Seoul')).replace(microsecond=0).time()
+        # message = u'[%s] %s' % (now,message)
+
+        message = u'%s' % (message)
 
         super().publish(message=message, channel=channel, red=cache)
     

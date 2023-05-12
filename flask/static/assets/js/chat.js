@@ -14,7 +14,7 @@ $(document).ready(() => {
         var check_mode =  $('#mode option:selected').val();
         var docs = "";
         docs = $('#file_history option:selected').val();
-        
+
         if (message.trim() !== "") {
             $.ajax({
                 url: "/chat",
