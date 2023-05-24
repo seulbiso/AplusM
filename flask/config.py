@@ -122,6 +122,8 @@ class FlaskConfig:
     SESSION_USE_SIGNER = True
     SESSION_REDIS = Redis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 
+    JSON_AS_ASCII = False
+
 
 class ProductionConfig(FlaskConfig):
     SQLALCHEMY_DATABASE_URI = Config.database_url()

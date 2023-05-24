@@ -11,21 +11,32 @@ function sse() {
         '[IMG_SEARCH]' : './static/assets/images/chat/google.svg'
     }
     var IMG_EMPTY_SRC = './static/assets/images/chat/empty.PNG'
-
  
     source.onmessage = function(e) {
 
         var data = e.data
         icon = IMG_EMPTY_SRC
-
+        
         //search log icon 
         for (var key in iconDict){
-            if (data.includes(key)){
-                data = data.replace(key , '')
-                icon = iconDict[key]
-                break;
-            }
+        if (data.includes(key)){
+            data = data.replace(key , '')
+            icon = iconDict[key]
+            break;
         }
+        }
+
+        data_json= JSON.parse(data)
+        
+        var LOG_TYPE = data_json["LOG_TYPE"]
+        var LOG_OBJECT = data_json[LOG_TYPE]
+
+        var CONTENT = LOG_OBJECT['CONTENT'] ? LOG_OBJECT['CONTENT'] : null
+        var DETAIL = LOG_OBJECT['DETAIL'] ? LOG_OBJECT['DETAIL'] : null
+        var LINK = LOG_OBJECT['LINK'] ? LOG_OBJECT['LINK'] : null
+        var PAGE = LOG_OBJECT['PAGE'] ? LOG_OBJECT['PAGE'] : null
+
+        
 
         $('#chat_log').prepend(
             '<div class="d-flex mb-1 ' + messageContainerClass + '">'

@@ -65,10 +65,8 @@ def event_stream(channel):
     # TODO: handle client disconnection.
     for message in pubsub.listen():
         if message['type']=='message':
-            
-            lines = message['data'].decode('utf-8').split('\n')
-            for line in lines:
-                yield'data: %s\n\n' % line
+            line = message['data']
+            yield 'data: '+ line +'\n\n' 
 
 
 @app.route('/stream')

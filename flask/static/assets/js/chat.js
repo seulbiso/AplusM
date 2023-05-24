@@ -15,6 +15,13 @@ $(document).ready(() => {
         var docs = "";
         docs = $('#file_history option:selected').val();
 
+        check_user_info_name = "소"
+        check_sex = "여자"
+        check_user_info_age = "20대"
+        check_user_info_job = "개발자"
+        check_user_info_hobby = "공부"
+
+
         if (message.trim() !== "") {
             $.ajax({
                 url: "/chat",
