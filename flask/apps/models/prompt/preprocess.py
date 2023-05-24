@@ -3,7 +3,7 @@ from langchain import PromptTemplate, SerpAPIWrapper
 from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain.agents import ZeroShotAgent, Tool
 from config import ModelConfig
-from apps.database.pubsub import PubsubChatLog
+from apps.models.log.logging import Logging
 
 class Preprocess:
     '''
@@ -76,7 +76,7 @@ class Prompt(Preprocess):
         '''
 
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 프롬프트 생성 ing...........')
+        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 ing..........."})
 
         input_variables = ["history"]
 
@@ -91,10 +91,10 @@ class Prompt(Preprocess):
                 ])
 
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 프롬프트 생성 완료!')
-        PubsubChatLog.publish(f"[IMG_PROMPT] {self.tplt['instruction']}")
-        PubsubChatLog.publish(f"[IMG_PROMPT] {self.persona(tplt=self.tplt, persona=persona)}")
-        PubsubChatLog.publish(f"[IMG_PROMPT] {self.user_info(tplt=self.tplt, user_info=user_info)}")
+        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 완료!"})
+        Logging("PROMPT").send_log({Logging.CONTENT:self.tplt['instruction']})
+        Logging("PROMPT").send_log({Logging.CONTENT:self.persona(tplt=self.tplt, persona=persona)})
+        Logging("PROMPT").send_log({Logging.CONTENT:self.user_info(tplt=self.tplt, user_info=user_info)})
 
         return prompt
     
@@ -131,7 +131,7 @@ class BrowsePrompt(Preprocess):
         '''
 
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 프롬프트 생성 ing...........')
+        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 ing..........."})
 
         input_variables = ["history", "input", "agent_scratchpad"]
         
@@ -149,12 +149,13 @@ class BrowsePrompt(Preprocess):
         
         # LOGGING
         log = suffix.replace(self.tplt["base"], "")
-        PubsubChatLog.publish('[IMG_INFO] 프롬프트 생성 완료!')
-        PubsubChatLog.publish(f"[IMG_PROMPT] {self.tplt['prefix']}")
-        [PubsubChatLog.publish(f'[IMG_PROMPT] {i}') for i in log.split("\n")]
+        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 완료!"})
+        Logging("PROMPT").send_log({Logging.CONTENT:self.tplt['prefix']})
+        [Logging("PROMPT").send_log({Logging.CONTENT:i}) for i in log.split("\n")]
 
         return chat_prompt
-    
+
+
     
 class DocsPrompt(Preprocess):
     '''
@@ -175,8 +176,7 @@ class DocsPrompt(Preprocess):
         '''
 
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 프롬프트 생성 ing...........')
-
+        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 ing..........."})
         
         system_info = {"persona":self.persona(tplt=self.tplt, persona=persona), 
                        "user_info":self.user_info(tplt=self.tplt, user_info=user_info),
@@ -197,7 +197,7 @@ class DocsPrompt(Preprocess):
 
         # LOGGING
         log = system_prompt.replace("\n{context}","").replace("Answer: ","")
-        PubsubChatLog.publish('[IMG_INFO] 프롬프트 생성 완료!')
-        [PubsubChatLog.publish(f'[IMG_PROMPT] {i}') for i in log.split("\n")]
+        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 완료!"})
+        [Logging("PROMPT").send_log({Logging.CONTENT:i}) for i in log.split("\n")]
 
         return prompt
