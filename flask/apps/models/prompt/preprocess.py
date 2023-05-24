@@ -76,7 +76,7 @@ class Prompt(Preprocess):
         '''
 
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 ing..........."})
+        Logging("INFO").send({Logging.CONTENT:"프롬프트 생성 ing..........."})
 
         input_variables = ["history"]
 
@@ -91,10 +91,10 @@ class Prompt(Preprocess):
                 ])
 
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 완료!"})
-        Logging("PROMPT").send_log({Logging.CONTENT:self.tplt['instruction']})
-        Logging("PROMPT").send_log({Logging.CONTENT:self.persona(tplt=self.tplt, persona=persona)})
-        Logging("PROMPT").send_log({Logging.CONTENT:self.user_info(tplt=self.tplt, user_info=user_info)})
+        Logging("INFO").send({Logging.CONTENT:"프롬프트 생성 완료!"})
+        Logging("PROMPT").send({Logging.CONTENT:self.tplt['instruction']})
+        Logging("PROMPT").send({Logging.CONTENT:self.persona(tplt=self.tplt, persona=persona)})
+        Logging("PROMPT").send({Logging.CONTENT:self.user_info(tplt=self.tplt, user_info=user_info)})
 
         return prompt
     
@@ -131,7 +131,7 @@ class BrowsePrompt(Preprocess):
         '''
 
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 ing..........."})
+        Logging("INFO").send({Logging.CONTENT:"프롬프트 생성 ing..........."})
 
         input_variables = ["history", "input", "agent_scratchpad"]
         
@@ -149,9 +149,9 @@ class BrowsePrompt(Preprocess):
         
         # LOGGING
         log = suffix.replace(self.tplt["base"], "")
-        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 완료!"})
-        Logging("PROMPT").send_log({Logging.CONTENT:self.tplt['prefix']})
-        [Logging("PROMPT").send_log({Logging.CONTENT:i}) for i in log.split("\n")]
+        Logging("INFO").send({Logging.CONTENT:"프롬프트 생성 완료!"})
+        Logging("PROMPT").send({Logging.CONTENT:self.tplt['prefix']})
+        [Logging("PROMPT").send({Logging.CONTENT:i}) for i in log.split("\n")]
 
         return chat_prompt
 
@@ -176,7 +176,7 @@ class DocsPrompt(Preprocess):
         '''
 
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 ing..........."})
+        Logging("INFO").send({Logging.CONTENT:"프롬프트 생성 ing..........."})
         
         system_info = {"persona":self.persona(tplt=self.tplt, persona=persona), 
                        "user_info":self.user_info(tplt=self.tplt, user_info=user_info),
@@ -197,7 +197,7 @@ class DocsPrompt(Preprocess):
 
         # LOGGING
         log = system_prompt.replace("\n{context}","").replace("Answer: ","")
-        Logging("INFO").send_log({Logging.CONTENT:"프롬프트 생성 완료!"})
-        [Logging("PROMPT").send_log({Logging.CONTENT:i}) for i in log.split("\n")]
+        Logging("INFO").send({Logging.CONTENT:"프롬프트 생성 완료!"})
+        [Logging("PROMPT").send({Logging.CONTENT:i}) for i in log.split("\n")]
 
         return prompt

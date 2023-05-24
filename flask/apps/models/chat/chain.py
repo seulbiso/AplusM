@@ -46,7 +46,7 @@ class SimpleChat:
             - output(string): GPT 모델의 답변
         '''
 
-        Logging("INFO").send_log({Logging.CONTENT:"답변 생성 ing..........."})
+        Logging("INFO").send({Logging.CONTENT:"답변 생성 ing..........."})
         output = self.conv.predict(input=input)
 
         return output
@@ -113,8 +113,8 @@ class BrowseChat:
         ]
 
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"답변 생성 ing..........."})
-        Logging("INFO").send_log({Logging.CONTENT:"Google 검색 ing..........."})
+        Logging("INFO").send({Logging.CONTENT:"답변 생성 ing..........."})
+        Logging("INFO").send({Logging.CONTENT:"Google 검색 ing..........."})
     
         response = self.conv({"input":input})
         output = response['output']
@@ -122,7 +122,7 @@ class BrowseChat:
 
         # LOGGING
         for step in steps:
-            Logging("SEARCH").send_log({Logging.CONTENT:f"Thought: {step[0][-1]}" + f"\nObservation: {step[-1]}"})
+            Logging("SEARCH").send({Logging.CONTENT:f"Thought: {step[0][-1]}" + f"\nObservation: {step[-1]}"})
 
         return output
 
@@ -162,10 +162,10 @@ class DocsChat:
             client.ft(index_name).info()
         except:
         # LOGGING
-            Logging("INFO").send_log({Logging.CONTENT:"새로운 문서입니다."})
+            Logging("INFO").send({Logging.CONTENT:"새로운 문서입니다."})
             return False
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"문서를 불러오는 중........"})
+        Logging("INFO").send({Logging.CONTENT:"문서를 불러오는 중........"})
         
         return True
 
@@ -190,7 +190,7 @@ class DocsChat:
         embed_db = Redis.from_documents(docs, self.embeddings, redis_url=self.redis_url,  index_name=index_name)
 
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"문서 저장 완료!"})
+        Logging("INFO").send({Logging.CONTENT:"문서 저장 완료!"})
         
         return embed_db
     
@@ -198,7 +198,7 @@ class DocsChat:
     def load_vectorstore(self, index_name):
 
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"내용 검색 중........"})
+        Logging("INFO").send({Logging.CONTENT:"내용 검색 중........"})
 
         # Load from existing index
         embed_db = Redis.from_existing_index(self.embeddings, redis_url=self.redis_url,  index_name=index_name)
@@ -208,7 +208,7 @@ class DocsChat:
     def multiple_docs(self):
         
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"전체 문서에서 검색 ing..."})
+        Logging("INFO").send({Logging.CONTENT:"전체 문서에서 검색 ing..."})
         
         # Load File List from S3
         conn = s3.s3_connection()
@@ -244,7 +244,7 @@ class DocsChat:
             - output(string): GPT 모델의 답변
         '''
         # LOGGING
-        Logging("INFO").send_log({Logging.CONTENT:"답변 생성 ing..........."})
+        Logging("INFO").send({Logging.CONTENT:"답변 생성 ing..........."})
         
         # Check if Index Exists
         self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
@@ -266,7 +266,7 @@ class DocsChat:
                 Logging.DOCS_LINK:s3.s3_get_file_path(self.file), 
                 Logging.DOCS_PAGE:str(int(doc.metadata['page'])+1)
                 }
-            Logging("DOCS").send_log(logs)
+            Logging("DOCS").send(logs)
         
 
         return output
