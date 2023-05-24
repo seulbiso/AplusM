@@ -5,11 +5,11 @@ from langchain.memory import ConversationBufferMemory, ConversationBufferWindowM
 from config import Config, ModelConfig
 import json, jsonpickle
 from apps.common.util import Util
+from apps.models.log.logging import Logging
 
 
 from langchain import SerpAPIWrapper, LLMChain
 from langchain.agents import ZeroShotAgent, Tool, AgentExecutor
-from apps.database.pubsub import PubsubChatLog
 
 from langchain.document_loaders import DirectoryLoader, PyPDFLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -46,7 +46,7 @@ class SimpleChat:
             - output(string): GPT 모델의 답변
         '''
 
-        PubsubChatLog.publish('[IMG_INFO] 답변 생성 ing...........')
+        Logging("INFO").send_log({Logging.CONTENT:"답변 생성 ing..........."})
         output = self.conv.predict(input=input)
 
         return output
@@ -61,7 +61,7 @@ class BrowseChat:
     '''
 
     def __init__(self, prompt):
-
+        
         # Tool 생성
         self.params ={
             "engine": "google",
@@ -113,8 +113,8 @@ class BrowseChat:
         ]
 
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 답변 생성 ing...........')
-        PubsubChatLog.publish('[IMG_INFO] Google 검색 ing...........')
+        Logging("INFO").send_log({Logging.CONTENT:"답변 생성 ing..........."})
+        Logging("INFO").send_log({Logging.CONTENT:"Google 검색 ing..........."})
     
         response = self.conv({"input":input})
         output = response['output']
@@ -122,7 +122,7 @@ class BrowseChat:
 
         # LOGGING
         for step in steps:
-            PubsubChatLog.publish(f"[IMG_SEARCH] Thought: {step[0][-1]}" + f"\nObservation: {step[-1]}")
+            Logging("SEARCH").send_log({Logging.CONTENT:f"Thought: {step[0][-1]}" + f"\nObservation: {step[-1]}"})
 
         return output
 
@@ -137,6 +137,7 @@ class DocsChat:
     '''
 
     def __init__(self, prompt, file_index):
+        
         # Set Index
         self.file, self.index = file_index, re.sub(r"\.[a-zA-Z0-9]+$", "", file_index.split(Util.S3_FILE_DEL)[-1])
         
@@ -161,10 +162,11 @@ class DocsChat:
             client.ft(index_name).info()
         except:
         # LOGGING
-            PubsubChatLog.publish('[IMG_INFO] 새로운 문서입니다.')
+            Logging("INFO").send_log({Logging.CONTENT:"새로운 문서입니다."})
             return False
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 문서를 불러오는 중........')
+        Logging("INFO").send_log({Logging.CONTENT:"문서를 불러오는 중........"})
+        
         return True
 
     def create_vectorstore(self, index_name):
@@ -188,14 +190,15 @@ class DocsChat:
         embed_db = Redis.from_documents(docs, self.embeddings, redis_url=self.redis_url,  index_name=index_name)
 
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 문서 저장 완료!')
+        Logging("INFO").send_log({Logging.CONTENT:"문서 저장 완료!"})
+        
         return embed_db
     
 
     def load_vectorstore(self, index_name):
 
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 내용 검색 중........')
+        Logging("INFO").send_log({Logging.CONTENT:"내용 검색 중........"})
 
         # Load from existing index
         embed_db = Redis.from_existing_index(self.embeddings, redis_url=self.redis_url,  index_name=index_name)
@@ -205,7 +208,7 @@ class DocsChat:
     def multiple_docs(self):
         
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 전체 문서에서 검색 ing...')
+        Logging("INFO").send_log({Logging.CONTENT:"전체 문서에서 검색 ing..."})
         
         # Load File List from S3
         conn = s3.s3_connection()
@@ -241,7 +244,7 @@ class DocsChat:
             - output(string): GPT 모델의 답변
         '''
         # LOGGING
-        PubsubChatLog.publish('[IMG_INFO] 답변 생성 ing...........')
+        Logging("INFO").send_log({Logging.CONTENT:"답변 생성 ing..........."})
         
         # Check if Index Exists
         self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
@@ -256,7 +259,15 @@ class DocsChat:
         output = res["result"]
         
         # LOGGING
-        [PubsubChatLog.publish(f"[IMG_DOCS] 와우! {int(doc.metadata['page'])+1}page에서 찾았어요!") for doc in res['source_documents']]
+        for doc in res['source_documents']:
+            logs = {
+                Logging.CONTENT:f"와우! {int(doc.metadata['page'])+1}page에서 찾았어요!",
+                Logging.DOCS_DETAIL: doc.page_content,
+                Logging.DOCS_LINK:s3.s3_get_file_path(self.file), 
+                Logging.DOCS_PAGE:str(int(doc.metadata['page'])+1)
+                }
+            Logging("DOCS").send_log(logs)
+        
 
         return output
 
