@@ -26,15 +26,22 @@ function sse() {
         }
         }
 
-        data_json= JSON.parse(data)
-        
-        var LOG_TYPE = data_json["LOG_TYPE"]
-        var LOG_OBJECT = data_json[LOG_TYPE]
+        try {
+            data_json= JSON.parse(data)
+            console.log(data_json)
+                    
+            var LOG_TYPE = data_json["LOG_TYPE"]
+            var LOG_OBJECT = data_json[LOG_TYPE]
 
-        var CONTENT = LOG_OBJECT['CONTENT'] ? LOG_OBJECT['CONTENT'] : null
-        var DETAIL = LOG_OBJECT['DETAIL'] ? LOG_OBJECT['DETAIL'] : null
-        var LINK = LOG_OBJECT['LINK'] ? LOG_OBJECT['LINK'] : null
-        var PAGE = LOG_OBJECT['PAGE'] ? LOG_OBJECT['PAGE'] : null
+            var CONTENT = LOG_OBJECT['CONTENT'] ? LOG_OBJECT['CONTENT'] : null
+            var DETAIL = LOG_OBJECT['DETAIL'] ? LOG_OBJECT['DETAIL'] : null
+            var LINK = LOG_OBJECT['LINK'] ? LOG_OBJECT['LINK'] : null
+            var PAGE = LOG_OBJECT['PAGE'] ? LOG_OBJECT['PAGE'] : null
+        } catch (e){
+            console.error(e)
+        }
+        
+
 
         
 
@@ -45,7 +52,7 @@ function sse() {
             + '</div>'
             + '<div class="d-flex flex-column align-items-' + (isUserMessage ? 'end' : 'start') + '">'
             + '<pre class="mb-1 p-1" style="white-space: pre-wrap">'
-            +  data // display the chatbot's message received from the server
+            +  CONTENT // display the chatbot's message received from the server
             + '</pre>'
             + '</div>'
             + '</div>'
