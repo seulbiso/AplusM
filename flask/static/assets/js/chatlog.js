@@ -17,23 +17,12 @@ $(document).ready(() => {
 
             var data = e.data
             icon = IMG_EMPTY_SRC
-            
-            
-            //search log icon 
-            for (var key in iconDict){
-            if (data.includes(key)){
-                data = data.replace(key , '')
-                icon = iconDict[key]
-                break;
-            }
-            }
-
+        
             try {
                 data_json= JSON.parse(data)
                 console.log(data_json)
                         
                 var LOG_TYPE = data_json["LOG_TYPE"]
-                LOG_TYPE = "INFO"
                 var LOG_OBJECT = data_json[LOG_TYPE]
 
                 var CONTENT = LOG_OBJECT['CONTENT'] ? LOG_OBJECT['CONTENT'] : null
@@ -50,24 +39,25 @@ $(document).ready(() => {
                     + '<img class="my-1 p-1" style="width:23px" src=' + icon + ' alt="...">'
                     + '</div>'
                     + '<div class="d-flex flex-column align-items-' + (isUserMessage ? 'end' : 'start') + '" id="log_full">'
-                    + '<pre class="mb-1 p-1" style="white-space: pre-wrap">'
+                    + '<pre class="mb-1 p-1" style="white-space: pre-wrap" id="log_content">'
                     + CONTENT 
+                    + '</pre>'
+                    +'<pre class="mb-1 p-4 rounded-end rounded-bottom bg-gray-300" style="white-space: pre-wrap" id="log_detail">'
+                    + DETAIL
                     + '</pre>'
                     + '</div>'
                     + '</div>'
                 );
-    
-    
+
                 if(DETAIL != null){ 
-                    $('#log_full').after(
-                        +'<pre class="mb-1 p-4 rounded-end rounded-bottom bg-gray-300" style="white-space: pre-wrap" id="log_detail">'
-                        + DETAIL
-                        + '</pre>'
-                    );
+                    $('#log_detail').show()
+                }else{
+                    $('#log_detail').hide()
                 }
+    
                 if(LINK != null){
-                    PAGE = PAGE != NULL ? '?page='+PAGE : ''
-                    $('#log_full').after(
+                    PAGE = PAGE != null ? '#page='+PAGE : ''
+                    $('#log_full').append(
                         '<a href="'
                         + LINK
                         + PAGE
@@ -75,6 +65,9 @@ $(document).ready(() => {
                     );
     
                 }
+    
+               
+                
             } catch (e){
                 console.error(e)
             }
