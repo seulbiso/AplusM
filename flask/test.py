@@ -16,7 +16,7 @@ def test():
     # print(contents_list)
     # for content in contents_list:
     #     print(content)
-    print(Config.get_current_time())
+    print(s3_get_file_path(file_name="하나은행_예금거래기본약관@20230522170245.pdf"))
     
 
 if __name__=="__main__":

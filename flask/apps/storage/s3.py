@@ -140,3 +140,5 @@ def s3_delete_objects(s3, bucket, keys):
     
     return True
 
+def s3_get_file_path(file_name,bucket=Config.BUCKET_NAME, prefix=Config.BUCKET_FODLER,bucket_resion=Config.AWS_S3_BUCKET_REGION):
+    return f"https://{bucket}.s3.{bucket_resion}.amazonaws.com/{prefix}/{file_name}"
