@@ -199,7 +199,6 @@ class DocsChat:
 
         # LOGGING
         Logging("INFO").send_log({Logging.CONTENT:"내용 검색 중........"})
-        # PubsubChatLog.publish('[IMG_INFO] 내용 검색 중........')
 
         # Load from existing index
         embed_db = Redis.from_existing_index(self.embeddings, redis_url=self.redis_url,  index_name=index_name)
