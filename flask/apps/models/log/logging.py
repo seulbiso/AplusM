@@ -21,5 +21,5 @@ class Logging:
         
         return json.dumps(logs, ensure_ascii=False)
     
-    def send_log(self, params):
+    def send(self, params):
         PubsubChatLog.publish(self.write_log(params))

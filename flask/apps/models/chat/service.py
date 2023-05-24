@@ -4,7 +4,7 @@ from apps.models.chat.chain import SimpleChat, BrowseChat, DocsChat
 from apps.models.chat.history import SaveHistory
 from apps.models.prompt.preprocess import *
 from apps.models.prompt.postprocess import *
-from apps.database.pubsub import PubsubChatLog
+from apps.models.log.logging import Logging
 
 class Chain:
 
@@ -53,14 +53,14 @@ class ChatService(Chain):
         # Predict
         try:
             output = postprocess(self.conversation_chain.chain(chat_Q))
-            PubsubChatLog.publish('[IMG_INFO] 답변 생성 완료!')
+            Logging("INFO").send({Logging.CONTENT:"답변 생성 완료!"})
         except Exception as e:
-            error_message = f'[IMG_INFO] 오류가 발생하였습니다. : {e}'
+            error_message = f'오류가 발생하였습니다. : {e}'
             current_app.logger.error(error_message)
-            PubsubChatLog.publish(error_message)
+            Logging("INFO").send({Logging.CONTENT:error_message})
 
         # output = postprocess(self.conversation_chain.chain(chat_Q))
-        # PubsubChatLog.publish('[IMG_INFO] 답변 생성 완료!')
+        # Logging("INFO").send({Logging.CONTENT:"답변 생성 완료!"})
 
         # DB Save
         record = self.save(self.conversation_chain.conv,
