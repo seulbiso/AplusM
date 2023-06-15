@@ -1,0 +1,10 @@
+{
+    "APP_HOST" : "0.0.0.0",
+    "APP_PORT" : 80,
+    "demoMode": false,
+    "theme": "light",
+    "sidebarBehaviour": "fixed",
+    "navigationColor": "inverted",
+    "isRTL": true,
+    "isFluid": true
+}

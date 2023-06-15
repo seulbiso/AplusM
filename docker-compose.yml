@@ -1,0 +1,72 @@
+version: "3.7"
+services:
+  flask:
+    build: ./flask
+    container_name: app
+    restart: always
+    depends_on:
+      - db
+      - redis-stack-server
+    environment:
+      - APP_NAME=FlaskAPP
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "5000:5000"
+    #command: gunicorn -b 0.0.0.0:5000 app:app
+    #command: gunicorn -b 0.0.0.0:5000 -w 2 -t 240 app:app --preload
+    command: gunicorn -b 0.0.0.0:5000 -w 8 -t 240 app:app --preload
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "0.0.0.0:80:80"
+    depends_on:
+      - flask
+
+  db:
+    build: ./db
+    # 컨테이너명
+    container_name: db
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    restart: always
+    # 접근 포트 설정(컨테이너 외부:컨테이너 내부)
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    # 스토리지 마운트(볼륨) 설정
+    volumes:
+      - ${MYSQL_DEFAULT_CONFIG_FILE}:/e4tc/mysql/conf.d
+      - ${MYSQL_DATA_PATH}:/var/lib/mysql
+      - ${MYSQL_INIT_DB_PATH}:/docker-entrypoint-initdb.d
+
+  redis-stack-server: 
+    build: ./redis-stack
+    container_name: redis-stack-server
+    restart: always
+    ports: # 바인딩할 포트:내부 포트
+      - ${REDIS_BINDING_PORT}:${REDIS_PORT}
+    #command: redis-stack-server
+    command: redis-stack-server /usr/local/etc/redis-stack/redis-stack.conf
+    volumes: # 마운트할 볼륨 설정
+      - ${REDIS_STACK_DATA_PATH}:/data
+      - ${REDIS_STACK_DEFAULT_CONFIG_FILE}:/usr/local/etc/redis-stack/redis-stack.conf
+
+  
+  # redis: 
+  #   build: ./redis
+  #   container_name: redis
+  #   restart: always
+  #   ports: # 바인딩할 포트:내부 포트
+  #     - ${REDIS_BINDING_PORT}:${REDIS_PORT}
+  #   command: redis-server /usr/local/etc/redis/redis.conf
+  #   volumes: # 마운트할 볼륨 설정
+  #     - ${REDIS_DATA_PATH}:/data
+  #     - ${REDIS_DEFAULT_CONFIG_FILE}:/usr/local/etc/redis/redis.conf
+    
+    
