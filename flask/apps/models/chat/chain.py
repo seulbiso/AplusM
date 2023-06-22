@@ -145,7 +145,7 @@ class DocsChat:
         self.redis_url = f"redis://{Config.REDIS_HOST}:{Config.REDIS_PORT}"
         
         # Models
-        self.llm = ChatOpenAI(temperature=0.0)
+        self.llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-16k")
         self.embeddings = OpenAIEmbeddings(openai_api_key=ModelConfig.GPT.API_KEY)
         
         # Prompt
@@ -168,6 +168,7 @@ class DocsChat:
         Logging("INFO").send({Logging.CONTENT:"문서를 불러오는 중........"})
         
         return True
+
 
     def create_vectorstore(self, index_name):
 
@@ -205,6 +206,7 @@ class DocsChat:
 
         return embed_db
 
+
     def multiple_docs(self):
         
         # LOGGING
@@ -234,8 +236,13 @@ class DocsChat:
         embed_db = Redis.from_documents(docs, self.embeddings, redis_url=self.redis_url)
         
         return embed_db
-        
+    
+    
+    def nonewlines(s: str) -> str:
+        return s.replace('\n', ' ').replace('\r', ' ')
 
+
+        
     def chain(self, input):
         '''
         Args:
@@ -246,24 +253,42 @@ class DocsChat:
         # LOGGING
         Logging("INFO").send({Logging.CONTENT:"답변 생성 ing..........."})
         
-        # Check if Index Exists
+        ## Check if Index Exists
         self.embed_db = self.load_vectorstore(self.index) if self.check_index_exists(self.index) else self.create_vectorstore(self.index)
-        # self.embed_db = self.multiple_docs()  # retrieve from multiple documents
-        self.conv = RetrievalQA.from_chain_type(llm=self.llm,
-                                              chain_type="stuff",
-                                              retriever=self.embed_db.as_retriever(),
-                                              chain_type_kwargs={"prompt": self.prompt},
-                                              return_source_documents=True)
+        # self.embed_db = self.multiple_docs()  # retrieve from multiple documents        
+      
         
-        res = self.conv({"query": input})
-        output = res["result"]
+        ## Run RetrievalQA
+        # self.conv = RetrievalQA.from_chain_type(llm=self.llm,
+        #                                       chain_type="stuff",
+        #                                       retriever=self.embed_db.as_retriever(),
+        #                                       chain_type_kwargs={"prompt": self.prompt},
+        #                                       return_source_documents=True)
+        
+        # res = self.conv({"query": input})
+        # output = res["result"]
+
+
+        # Retrieve and Generate
+        self.retriever = self.embed_db.as_retriever()
+        
+        sources = self.retriever.get_relevant_documents(input)
+        processed_sources = [doc.metadata['source'] + "-" + str(doc.metadata['page']) + ": " + self.nonewlines(doc.page_content) for doc in sources]
+        content = "\n".join(processed_sources)
+
+        self.conv = LLMChain(llm=self.llm, prompt=self.prompt)
+        output = self.conv.run(question=input, context=content)
+        
         
         # LOGGING
-        for doc in res['source_documents']:
+        for doc in sources:
+            file_name = re.search(r"/([^/]+)$", doc.metadata['source']).group(1)
+
             logs = {
                 Logging.CONTENT:f"와우! {int(doc.metadata['page'])+1}page에서 찾았어요!",
                 Logging.DOCS_DETAIL: doc.page_content,
-                Logging.DOCS_LINK:s3.s3_get_file_path(self.file), 
+                # Logging.DOCS_LINK:s3.s3_get_file_path(self.file), 
+                Logging.DOCS_LINK:s3.s3_get_file_path(file_name), 
                 Logging.DOCS_PAGE:str(int(doc.metadata['page'])+1)
                 }
             Logging("DOCS").send(logs)
