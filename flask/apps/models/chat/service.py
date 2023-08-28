@@ -27,7 +27,8 @@ class Chain:
             conversation_chain = BrowseChat(prompt)
 
         elif self.mode == "mode_docs":
-            prompt = DocsPrompt().write_prompt(persona, user_info)
+            # prompt = DocsPrompt().write_prompt(persona, user_info)
+            prompt = DocsPrompt().write_prompt()
             conversation_chain = DocsChat(prompt, file_index)
 
         return conversation_chain

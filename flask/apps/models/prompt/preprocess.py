@@ -178,22 +178,26 @@ class DocsPrompt(Preprocess):
         # LOGGING
         Logging("INFO").send({Logging.CONTENT:"프롬프트 생성 ing..........."})
         
-        system_info = {"persona":self.persona(tplt=self.tplt, persona=persona), 
-                       "user_info":self.user_info(tplt=self.tplt, user_info=user_info),
-                       "context":"{context}"}
-        system_prompt =  self.tplt["instruction"].format(**system_info)        
+        # system_info = {"persona":self.persona(tplt=self.tplt, persona=persona), 
+        #                "user_info":self.user_info(tplt=self.tplt, user_info=user_info),
+        #                "context":"{context}"}
+        # system_prompt =  self.tplt["instruction"].format(**system_info)        
+        system_prompt = self.tplt["instruction"]
         
-        input_variables = ["context"]
+        # input_variables = ["context"]
 
-        chat_prompt = PromptTemplate(
-            input_variables = input_variables,
-            template = system_prompt
-            )
+        # chat_prompt = PromptTemplate(
+        #     input_variables = input_variables,
+        #     template = system_prompt
+        #     )
         
+        # prompt = ChatPromptTemplate.from_messages([
+        #         SystemMessagePromptTemplate(prompt=chat_prompt),
+        #         HumanMessagePromptTemplate.from_template("{question}")
+        #         ])
         prompt = ChatPromptTemplate.from_messages([
-                SystemMessagePromptTemplate(prompt=chat_prompt),
-                HumanMessagePromptTemplate.from_template("{question}")
-                ])
+            SystemMessagePromptTemplate.from_template(system_prompt)
+        ])
 
         # LOGGING
         log = system_prompt.replace("\n{context}","").replace("Answer: ","")
