@@ -1,23 +1,27 @@
 FROM python:3.8-slim
 
+ENV APP_NAME=FlaskAPP
+ENV PYTHONUNBUFFERED=1
 
-# flask의 작업 위치가 /app이라는 뜻
+# The working directory for Flask is /app.
 WORKDIR /app
 
-# 현재 디렉토리의 모든 파일들을 컨테이너의 /app 디렉토리에 복사한다.
-ADD . /app
-
 # Install gnupg2 and import GPG keys for Ubuntu package repository
-RUN apt-get update && \
-    apt-get install -y gnupg2 && \
+RUN apt-get update && apt-get install -y gnupg2 && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 871920D1991BC93C
 
 # Add main repository to sources list
 RUN echo "deb http://archive.ubuntu.com/ubuntu/ focal main" >> /etc/apt/sources.list
 
-RUN apt-get update
-RUN apt-get install -y libmysqlclient-dev build-essential
- 
-RUN pip install -r requirements.txt
+# 최신 패키지 목록을 받고 패키지 설치를 한번에 수행합니다.
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 
-# CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
+# requirements.txt 파일만을 복사하여 캐시를 활용합니다.
+COPY requirements.txt ./
+
+# 패키지 설치를 pip 한번으로 줄입니다. 불필요한 업그레이드를 제거합니다.
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy all files from the current directory to the /app directory in the container.
+COPY . .

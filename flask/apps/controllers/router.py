@@ -15,7 +15,12 @@ app.secret_key ='abcedateateataeate'
 app.config.from_object(Config.from_app_mode())
 app.logger.setLevel(logging.DEBUG)
 Session(app)
-os.environ['OPENAI_API_KEY'] = ModelConfig.GPT.API_KEY
+#os.environ['OPENAI_API_KEY'] = ModelConfig.GPT.API_KEY
+os.environ['OPENAI_API_KEY'] = "d0906ae4f7774f5e86f7b3c55b5334b0"
+os.environ['OPENAI_API_TYPE'] = "azure"
+os.environ['OPENAI_API_BASE'] = "https://openai-shinhan-poc.openai.azure.com/"
+os.environ['OPENAI_API_VERSION'] = "2023-03-15-preview"
+
 
 BlueprintRegister(app=app, module_path='apps.controllers', controller_name='controllers').register()
 

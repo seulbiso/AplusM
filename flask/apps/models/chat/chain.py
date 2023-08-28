@@ -1,5 +1,5 @@
 from flask import current_app
-from langchain.chat_models import ChatOpenAI
+from langchain.chat_models import ChatOpenAI, AzureChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
 from config import Config, ModelConfig
@@ -29,7 +29,8 @@ class SimpleChat:
     '''
 
     def __init__(self, prompt):
-        self.llm = ChatOpenAI(temperature=0.7)
+        #self.llm = ChatOpenAI(temperature=0.0)
+        self.llm = AzureChatOpenAI(temperature=0.0,deployment_name="gpt-35-turbo-16k")
         self.prompt = prompt
         self.conv = ConversationChain(
             llm = self.llm, 
@@ -68,7 +69,8 @@ class BrowseChat:
             "hl": "ko",
             "gl": "kr"
         }
-        self.llm = ChatOpenAI(temperature=0.0)
+        #self.llm = ChatOpenAI(temperature=0.0)
+        self.llm = AzureChatOpenAI(temperature=0.0,deployment_name="gpt-35-turbo-16k")
         self.search = SerpAPIWrapper(params=self.params, serpapi_api_key = ModelConfig.SERP.API_KEY)
         self.tools = [
             Tool(
@@ -145,8 +147,10 @@ class DocsChat:
         self.redis_url = f"redis://{Config.REDIS_HOST}:{Config.REDIS_PORT}"
         
         # Models
-        self.llm = ChatOpenAI(temperature=0.0)
-        self.embeddings = OpenAIEmbeddings(openai_api_key=ModelConfig.GPT.API_KEY)
+        #self.llm = ChatOpenAI(temperature=0.0)
+        self.llm = AzureChatOpenAI(temperature=0.0,deployment_name="gpt-35-turbo-16k")
+        #self.embeddings = OpenAIEmbeddings(openai_api_key=ModelConfig.GPT.API_KEY)
+        self.embeddings = OpenAIEmbeddings(deployment="text-embedding-ada-002")
         
         # Prompt
         self.prompt = prompt
@@ -184,7 +188,8 @@ class DocsChat:
                      
 
         # Text Split
-        docs = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50).split_documents(document)
+        docs = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=50).split_documents(document)
+        Logging("INFO").send({Logging.CONTENT:f"docs {docs}"})
 
         # Save to Redis with Index
         embed_db = Redis.from_documents(docs, self.embeddings, redis_url=self.redis_url,  index_name=index_name)

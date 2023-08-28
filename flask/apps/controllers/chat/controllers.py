@@ -10,7 +10,6 @@ from apps.models.chat.service import *
 
 from apps.database.pubsub import PubsubChatLog
 from apps.database.session import cache
-from apps.database.models import history_head
 
 app = Blueprint('chat', __name__, url_prefix='/chat')
 
